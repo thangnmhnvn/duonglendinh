@@ -1,0 +1,147 @@
+/* css/style.css */
+
+/* --- Cấu hình chung --- */
+body, html {
+    height: 100%;
+    margin: 0;
+    background: #002366; /* Màu xanh thương hiệu Olympia */
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+/* --- Quản lý các màn hình --- */
+.game-screen {
+    display: none; /* Mặc định ẩn tất cả */
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Hiển thị flex cho các màn hình cần căn giữa */
+#screen-welcome,
+#screen-player-ready {
+    display: none; /* Sẽ được JS bật lên thành flex sau */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Background chung cho các màn hình */
+#screen-welcome,
+#screen-players,
+#screen-player-ready {
+    background: url('../images/bg.png') no-repeat center center/cover;
+}
+
+/* --- Màn hình 1: Welcome --- */
+#screen-welcome h1 {
+    font-size: 4rem;
+    text-shadow: 2px 2px 4px #000;
+}
+
+/* --- Màn hình 2: Video --- */
+#screen-video {
+    background: black;
+    z-index: 999;
+}
+
+#intro-video-player {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Giữ tỷ lệ video không bị méo */
+}
+
+#btn-skip-video {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+/* --- Màn hình 3: Giới thiệu thí sinh --- */
+#screen-players {
+    padding-top: 20px;
+    display: none; /* JS sẽ bật thành flex */
+}
+
+/* Thẻ tên thí sinh */
+.player-card {
+    border: 2px solid gold;
+    background: rgba(0,0,0,0.7);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 10px;
+    transition: transform 0.3s;
+}
+
+.player-card:hover {
+    transform: scale(1.05);
+    background: rgba(0,0,0,0.9);
+    cursor: pointer;
+}
+
+.player-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #ddd;
+    margin: 0 auto 15px;
+    object-fit: cover;
+    border: 3px solid white;
+}
+
+.score-display {
+    background-color: #0d6efd; /* Bootstrap primary */
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 10px;
+}
+
+/* --- Bảng Luật Chơi (Mới) --- */
+.rules-box {
+    background: rgba(0, 0, 0, 0.7); /* Nền đen mờ */
+    border: 2px solid #ffc107; /* Viền vàng */
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.5); /* Hiệu ứng phát sáng */
+    backdrop-filter: blur(5px);
+    transition: transform 0.3s;
+}
+
+.rules-box:hover {
+    transform: scale(1.02);
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.rules-box ul {
+    font-size: 1.1rem;
+}
+
+/* Thanh cuộn tùy chỉnh (đẹp hơn trên Chrome) */
+#screen-players::-webkit-scrollbar {
+    width: 8px;
+}
+#screen-players::-webkit-scrollbar-thumb {
+    background: #ffc107;
+    border-radius: 4px;
+}
+
+/* --- Màn hình 4: Player Ready --- */
+#screen-player-ready {
+    padding-top: 50px;
+}
+
+.animate-pulse {
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
