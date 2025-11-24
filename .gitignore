@@ -1,0 +1,16 @@
+# These are some examples of commonly ignored file patterns.
+# You should customize this list as applicable to your project.
+# Learn more about .gitignore:
+#     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
+
+# Log files
+*.log
+
+# --- File Thùng Rác (Misc Files) ---
+.DS_Store
+.idea/
+.vscode/
+Thumbs.db
+desktop.ini
+#/vendor/ # Dành cho các thư viện Composer
+#/node_modules/ # Dành cho các thư viện Node.js (nếu bạn dùng)
