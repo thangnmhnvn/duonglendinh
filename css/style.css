@@ -4,15 +4,90 @@
 body, html {
     height: 100%;
     margin: 0;
-    background: #002366; /* Màu xanh thương hiệu Olympia */
+    background: #002366; /* Xanh Olympia */
     overflow: hidden;
     font-family: Arial, sans-serif;
     color: white;
 }
 
-/* --- Quản lý các màn hình --- */
+body {
+    padding-top: 50px;
+}
+
+/* Tùy chỉnh thanh Nav cho đẹp hơn */
+.navbar button {
+    font-weight: bold;
+    min-width: 100px;
+}
+
+.navbar button:hover {
+    background-color: #ffc107; /* Màu vàng */
+    color: black;
+    border-color: #ffc107;
+}
+
+/* --- Sidebar Điểm Số --- */
+#side-scoreboard {
+    position: fixed;
+    top: 70px; /* Cách đỉnh 70px để tránh thanh Admin Nav */
+    right: 20px; /* Nằm bên phải */
+    width: 180px;
+    z-index: 1000;
+    display: none; /* Mặc định ẩn, JS sẽ bật khi vào game */
+}
+
+/* Thẻ thí sinh thu nhỏ */
+.mini-player-card {
+    background: rgba(0, 0, 0, 0.6); /* Nền đen mờ */
+    border: 1px solid #ffc107; /* Viền vàng */
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    transition: all 0.3s;
+    backdrop-filter: blur(3px);
+}
+
+/* Hiệu ứng khi là lượt của thí sinh này */
+.mini-player-card.active {
+    background: rgba(13, 110, 253, 0.3); /* Nền xanh nhẹ */
+    border: 2px solid white;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.mini-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid white;
+    object-fit: cover;
+    margin-bottom: 5px;
+}
+
+.mini-name {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-score {
+    background: #0d6efd;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    padding: 0 10px;
+    display: inline-block;
+    margin-top: 2px;
+}
+
+/* --- Quản lý màn hình --- */
 .game-screen {
-    display: none; /* Mặc định ẩn tất cả */
+    display: none;
     width: 100%;
     height: 100%;
     position: absolute;
@@ -20,26 +95,128 @@ body, html {
     left: 0;
 }
 
-/* Hiển thị flex cho các màn hình cần căn giữa */
-#screen-welcome,
-#screen-player-ready {
-    display: none; /* Sẽ được JS bật lên thành flex sau */
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-/* Background chung cho các màn hình */
-#screen-welcome,
-#screen-players,
-#screen-player-ready {
+/* Background chung */
+.game-screen {
     background: url('../images/bg.png') no-repeat center center/cover;
 }
 
 /* --- Màn hình 1: Welcome --- */
-#screen-welcome h1 {
-    font-size: 4rem;
-    text-shadow: 2px 2px 4px #000;
+/* Màn hình chào m?ng */
+#screen-welcome {
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+    font-family: "Poppins", sans-serif;
+    text-align: center;
+    color: #fff;
+    transition: opacity 1s ease;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+/* Tiêu d? */
+#screen-welcome .title {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-bottom: 30px;
+    animation: slideDown 1.2s ease;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+}
+
+/* Nút b?t d?u */
+#screen-welcome button {
+    padding: 15px 40px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: none;
+    border-radius: 50px;
+    background: #ff9800;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    animation: fadeIn 2s ease;
+}
+
+#screen-welcome button:hover {
+    background: #ffb84d;
+    transform: scale(1.05);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.4);
+}
+
+/* Hi?u ?ng khi bi?n m?t */
+#screen-welcome.fadeOut {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Keyframes */
+@keyframes slideDown {
+    from {transform: translateY(-100px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
+}
+
+@keyframes slideInRight {
+    from {transform: translateX(100px); opacity: 0;}
+    to {transform: translateX(0); opacity: 1;}
+}
+
+@keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+/* Gradient d?ng cho welcome screen */
+#screen-welcome {
+    background: linear-gradient(135deg, #74ebd5, #ACB6E5, #fbc2eb, #a6c1ee);
+    background-size: 400% 400%;
+    animation: gradientMove 10s ease infinite;
+}
+
+/* Hi?u ?ng gradient ch?y */
+@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Tiêu d? ánh sáng ch?y qua */
+#screen-welcome .title {
+    position: relative;
+    overflow: hidden;
+}
+#screen-welcome .title::after {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.8), transparent);
+    animation: shine 3s infinite;
+}
+@keyframes shine {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+}
+
+/* Nút Start rung nh? */
+#screen-welcome button {
+    animation: bounce 2s infinite;
+}
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-6px); }
+    60% { transform: translateY(-3px); }
+}
+
+/* Khi bi?n m?t: zoom out + fade */
+#screen-welcome.fadeOut {
+    opacity: 0;
+    transform: scale(1.2);
+    transition: opacity 1s ease, transform 1s ease;
 }
 
 /* --- Màn hình 2: Video --- */
@@ -51,12 +228,12 @@ body, html {
 #intro-video-player {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Giữ tỷ lệ video không bị méo */
+    object-fit: cover;
 }
 
 #btn-skip-video {
     position: absolute;
-    bottom: 20px;
+    top: 20px;
     right: 20px;
     z-index: 1000;
 }
@@ -64,10 +241,8 @@ body, html {
 /* --- Màn hình 3: Giới thiệu thí sinh --- */
 #screen-players {
     padding-top: 20px;
-    display: none; /* JS sẽ bật thành flex */
 }
 
-/* Thẻ tên thí sinh */
 .player-card {
     border: 2px solid gold;
     background: rgba(0,0,0,0.7);
@@ -81,7 +256,6 @@ body, html {
 .player-card:hover {
     transform: scale(1.05);
     background: rgba(0,0,0,0.9);
-    cursor: pointer;
 }
 
 .player-avatar {
@@ -95,20 +269,20 @@ body, html {
 }
 
 .score-display {
-    background-color: #0d6efd; /* Bootstrap primary */
+    background-color: #0d6efd;
     border-radius: 5px;
     padding: 5px;
     margin-top: 10px;
 }
 
-/* --- Bảng Luật Chơi (Mới) --- */
+/* Bảng Luật Chơi */
 .rules-box {
-    background: rgba(0, 0, 0, 0.7); /* Nền đen mờ */
-    border: 2px solid #ffc107; /* Viền vàng */
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #ffc107;
     border-radius: 15px;
     padding: 20px;
     margin-top: 20px;
-    box-shadow: 0 0 15px rgba(255, 193, 7, 0.5); /* Hiệu ứng phát sáng */
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.5);
     backdrop-filter: blur(5px);
     transition: transform 0.3s;
 }
@@ -118,11 +292,6 @@ body, html {
     background: rgba(0, 0, 0, 0.85);
 }
 
-.rules-box ul {
-    font-size: 1.1rem;
-}
-
-/* Thanh cuộn tùy chỉnh (đẹp hơn trên Chrome) */
 #screen-players::-webkit-scrollbar {
     width: 8px;
 }
@@ -134,6 +303,9 @@ body, html {
 /* --- Màn hình 4: Player Ready --- */
 #screen-player-ready {
     padding-top: 50px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .animate-pulse {
@@ -144,4 +316,35 @@ body, html {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+}
+
+
+/* Hiệu ứng tỏa sáng cho Quán quân */
+.winner-box {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+/* Vòng sáng hào quang sau lưng */
+.laurel-wreath {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(255,215,0,0.6) 0%, rgba(255,215,0,0) 70%);
+    z-index: 0;
+    animation: pulse-glow 2s infinite;
+}
+
+@keyframes pulse-glow {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
 }

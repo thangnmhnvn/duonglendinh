@@ -1,105 +1,162 @@
 var GameLogic = {
+    // --- CẤU HÌNH HỆ THỐNG ---
+    saveKey: 'olympia_save_data_v1', // Tên khóa lưu dữ liệu
+
+    // Biến chung
     currentPlayerIndex: 0,
-    currentQueue: [], // Hàng đợi câu hỏi cho thí sinh hiện tại
     timer: null,
     timeLeft: 0,
 
+    // Khởi tạo
     init: function() {
-        GameUI.renderPlayers();
+        console.log("Khởi tạo game...");
+
+        // Thử tải game đã lưu trước đó
+        if (this.loadGame()) {
+            console.log("Đã khôi phục trạng thái game cũ.");
+        } else {
+            // Nếu không có dữ liệu cũ -> Chạy mới từ đầu
+            GameUI.renderPlayers();
+            GameUI.switchScreen("screen-welcome");
+        }
     },
 
-    startGame: function() { GameUI.playIntroVideo(); },
-    onIntroFinish: function() { GameUI.stopIntroVideo(); },
+    // --- HÀM LƯU GAME (GỌI KHI CÓ THAY ĐỔI) ---
+    saveGame: function() {
+        // Lấy ID màn hình đang hiển thị
+        var currentScreenId = $(".game-screen:visible").attr("id") || "screen-welcome";
 
-    startKhoiDong: function() {
-        GameUI.playVideo(GameConfig.paths.khoiDongIntro, function() {
-            GameLogic.preparePlayerTurn(0);
+        var dataToSave = {
+            // 1. Dữ liệu cấu hình (Điểm số, Trạng thái câu hỏi)
+            players: GameConfig.players,
+            vcQuestions: GameConfig.rounds.vuotChuongNgaiVat.questions, // Lưu trạng thái ma trận
+
+            // 2. Dữ liệu Logic (Lượt chơi hiện tại)
+            currentScreen: currentScreenId,
+
+            // Vòng 1
+            currentPlayerIndex: this.currentPlayerIndex,
+
+            // Vòng 2
+            vcCurrentTurnIndex: this.vcCurrentTurnIndex || 0,
+
+            // Vòng 3
+            ttCurrentQIndex: this.ttCurrentQIndex || 0,
+
+            // Vòng 4
+            vdCurrentTurnIndex: this.vdCurrentTurnIndex || 0
+        };
+
+        // Lưu vào trình duyệt
+        localStorage.setItem(this.saveKey, JSON.stringify(dataToSave));
+        console.log("Game Saved at screen:", currentScreenId);
+    },
+
+    // --- HÀM TẢI GAME (GỌI KHI F5) ---
+    loadGame: function() {
+        var json = localStorage.getItem(this.saveKey);
+        if (!json) return false; // Không có dữ liệu lưu
+
+        try {
+            var data = JSON.parse(json);
+
+            // 1. Khôi phục dữ liệu Config
+            GameConfig.players = data.players;
+            if(data.vcQuestions) GameConfig.rounds.vuotChuongNgaiVat.questions = data.vcQuestions;
+
+            // 2. Khôi phục biến Logic
+            this.currentPlayerIndex = data.currentPlayerIndex;
+            this.vcCurrentTurnIndex = data.vcCurrentTurnIndex;
+            this.ttCurrentQIndex = data.ttCurrentQIndex;
+            this.vdCurrentTurnIndex = data.vdCurrentTurnIndex;
+
+            // 3. Vẽ lại giao diện từ dữ liệu đã khôi phục
+            GameUI.renderPlayers();          // Vòng 1
+            GameUI.renderVCIntroPlayers();   // Vòng 2 Intro
+            GameUI.renderTTIntroPlayers();   // Vòng 3 Intro
+            GameUI.renderVDIntroPlayers();   // Vòng 4 Intro
+
+            // Nếu đang ở màn hình chơi Vòng 2 -> Vẽ lại ma trận & Sidebar
+            if (data.currentScreen === 'screen-vc-play') {
+                GameUI.renderMatrix();
+                GameUI.renderVCSidebar();
+                if (this.vcTurnOrder && this.vcTurnOrder[this.vcCurrentTurnIndex] !== undefined) {
+                    GameUI.highlightSidePlayer(this.vcTurnOrder[this.vcCurrentTurnIndex]);
+                }
+            }
+
+            // Nếu đang ở màn hình chơi Vòng 3 -> Vẽ lại câu hỏi hiện tại
+            if (data.currentScreen === 'screen-tt-play') {
+                var q = GameConfig.rounds.tangToc.questions[this.ttCurrentQIndex];
+                if(q) GameUI.renderTTQuestion(q);
+                GameUI.renderTTScoringButtons();
+            }
+
+            // Nếu đang ở màn hình chơi Vòng 4 -> Vẽ lại danh sách câu hỏi
+            if (data.currentScreen === 'screen-vd-play') {
+                if (this.vdPlayerOrder) {
+                    var pIdx = this.vdPlayerOrder[this.vdCurrentTurnIndex];
+                    GameUI.renderVDQuestionList(pIdx);
+                    GameUI.highlightSidePlayer(pIdx);
+                    $("#vd-question-content").text("Mời chọn câu hỏi (Khôi phục)...");
+                }
+            }
+
+            // 4. Chuyển đến màn hình cũ
+            if (data.currentScreen) {
+                // Lưu ý: Gọi switchScreen ở đây sẽ kích hoạt saveGame lần nữa, không sao cả.
+                GameUI.switchScreen(data.currentScreen);
+            }
+
+            return true;
+        } catch (e) {
+            console.error("Lỗi khi load game:", e);
+            return false;
+        }
+    },
+
+    // --- HÀM RESET GAME (XÓA DATA & RELOAD) ---
+    resetGame: function() {
+        if (confirm("Bạn có chắc chắn muốn XÓA TOÀN BỘ dữ liệu và chơi lại từ đầu?")) {
+            localStorage.removeItem(this.saveKey);
+            location.reload();
+        }
+    },
+
+    startGame: function() {
+        GameUI.playVideo(GameConfig.paths.introVideo, function() {
+            GameUI.stopIntroVideo();
+            GameUI.switchScreen("screen-players");
         });
     },
 
-    preparePlayerTurn: function(playerIndex) {
-        this.currentPlayerIndex = playerIndex;
-
-        // 1. Lấy 6 câu hỏi từ ngân hàng câu hỏi (Trong thực tế cần lấy câu chưa ai trả lời)
-        // Đây là ví dụ lấy 6 câu đầu tiên
-        var allQuestions = GameConfig.rounds.khoiDong.questionsBank;
-        this.currentQueue = allQuestions.slice(0, 6);
-
-        GameUI.showPlayerReady(playerIndex);
-    },
-
-    startQuestions: function() {
-        // Chuyển sang màn hình chơi game (chúng ta sẽ xây dựng UI này ở bước sau)
-        // GameUI.switchScreen("screen-gameplay-kd");
-
-        this.timeLeft = GameConfig.rounds.khoiDong.duration;
-        this.nextQuestion();
-        this.startTimer();
-    },
-
-    // Hàm lấy câu hỏi tiếp theo trong hàng đợi
-    nextQuestion: function() {
-        if (this.currentQueue.length === 0) {
-            this.finishTurn(); // Hết câu hỏi
-            return;
-        }
-
-        // Lấy câu hỏi đầu tiên ra khỏi hàng đợi
-        var currentQ = this.currentQueue[0];
-
-        // Gọi UI để hiện câu hỏi này (Bước sau sẽ làm)
-        console.log("Hiện câu hỏi: " + currentQ.content);
-        // GameUI.renderQuestion(currentQ);
-    },
-
-    // Xử lý khi người chơi chọn ĐÚNG
-    handleCorrect: function() {
-        // Cộng điểm
-        GameConfig.players[this.currentPlayerIndex].score += GameConfig.rounds.khoiDong.points;
-        GameUI.renderPlayers(); // Cập nhật điểm trên màn hình chờ
-
-        // Xóa câu hỏi vừa trả lời xong khỏi hàng đợi (vĩnh viễn)
-        this.currentQueue.shift();
-
-        // Chuyển câu tiếp
-        this.nextQuestion();
-    },
-
-    // Xử lý khi người chơi chọn SAI
-    handleWrong: function() {
-        // Không trừ điểm, xóa câu hỏi khỏi hàng đợi
-        this.currentQueue.shift();
-        this.nextQuestion();
-    },
-
-    // Xử lý khi người chơi BỎ QUA
-    handleSkip: function() {
-        // Lấy câu hỏi đầu tiên ra
-        var skippedQ = this.currentQueue.shift();
-
-        // Đẩy xuống cuối hàng đợi
-        this.currentQueue.push(skippedQ);
-
-        console.log("Đã bỏ qua, câu hỏi này sẽ quay lại sau.");
-        this.nextQuestion();
-    },
-
-    startTimer: function() {
-        clearInterval(this.timer);
-        this.timer = setInterval(() => {
-            this.timeLeft--;
-            console.log("Thời gian: " + this.timeLeft);
-            // GameUI.updateTimer(this.timeLeft);
-
-            if (this.timeLeft <= 0) {
-                clearInterval(this.timer);
-                this.finishTurn();
-            }
-        }, 1000);
-    },
-
-    finishTurn: function() {
-        alert("Hết giờ hoặc hết câu hỏi!");
-        // Logic chuyển sang người tiếp theo hoặc kết thúc vòng
+    onIntroFinish: function() {
+        GameUI.stopIntroVideo();
+        GameUI.switchScreen("screen-players");
     }
 };
+
+
+// js/game_logic.js
+
+Object.assign(GameLogic, {
+    // ... (Giữ nguyên các hàm khác) ...
+
+    // --- LOGIC KẾT THÚC GAME ---
+    transitionToSummary: function() {
+        console.log("Kết thúc chương trình. Chuyển sang màn hình tổng kết.");
+
+        // 1. Chơi nhạc/video chiến thắng
+        GameUI.playVideo(GameConfig.paths.endGameVideo, function() {
+            GameUI.stopIntroVideo();
+
+            // 2. Tìm người chiến thắng
+            // Copy danh sách để không ảnh hưởng mảng gốc, sau đó sắp xếp giảm dần theo điểm
+            var sortedPlayers = [...GameConfig.players].sort((a, b) => b.score - a.score);
+            var winner = sortedPlayers[0];
+
+            // 3. Hiển thị màn hình tổng kết
+            GameUI.renderSummary(winner, sortedPlayers);
+        });
+    }
+});

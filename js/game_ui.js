@@ -1,77 +1,198 @@
 var GameUI = {
-    // Hàm chuyển đổi màn hình
+    // --- QUẢN LÝ MÀN HÌNH ---
     switchScreen: function(screenId) {
-        $(".game-screen").hide(); // Ẩn tất cả
-        $("#" + screenId).fadeIn(); // Hiện màn hình cần thiết
+        $(".game-screen").hide();
+        $("#" + screenId).fadeIn();
+
+        // 1. Xử lý Flexbox (Giữ nguyên logic cũ)
+        if(["screen-welcome", "screen-player-ready", "screen-players", "screen-vc-intro", "screen-tt-intro", "screen-vd-intro", "screen-summary"].includes(screenId)) {
+            $("#" + screenId).css("display", "flex");
+        }
+
+        // 2. Xử lý Sidebar (Giữ nguyên logic cũ)
+        if (["screen-gameplay", "screen-vc-play", "screen-tt-play", "screen-vd-play"].includes(screenId)) {
+            $("#side-scoreboard").fadeIn();
+            this.renderSideScoreboard();
+        } else {
+            $("#side-scoreboard").fadeOut();
+        }
+
+        // 3. XỬ LÝ NHẠC NỀN (MỚI THÊM)
+        // Nếu vào màn hình 4 thí sinh -> Chơi nhạc
+        if (screenId === "screen-players") {
+            console.log(screenId);
+            this.playBgMusic(GameConfig.paths.audio.bgAudio1, function () {
+                GameUI.playBgMusic(GameConfig.paths.audio.bgAudio2, () => {});
+            });
+        }
+        // Nếu chuyển sang màn hình khác -> Tắt nhạc
+        else {
+            this.stopBgMusic();
+        }
+
+        // 4. Auto-save (Giữ nguyên logic cũ)
+        if (typeof GameLogic !== 'undefined' && GameLogic.saveGame) {
+            setTimeout(function() { GameLogic.saveGame(); }, 100);
+        }
     },
 
-    // Hàm điều khiển video
-    playIntroVideo: function() {
-        var video = document.getElementById("intro-video-player");
-        this.switchScreen("screen-video");
-        video.currentTime = 0;
-        video.play().catch(e => console.log("Cần tương tác để phát video:", e));
+    playMusic: function(url, onEndedCallback) {
+        var audio = document.getElementById("music-player");
+        if (audio) {
+            $(audio).find("source").attr("src", url);
+            audio.load();
+            // Giảm âm lượng một chút để không át tiếng MC/Video khác (nếu có)
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log("Cần tương tác để phát nhạc:", e));
+
+            $(audio).off("ended").on("ended", function() {
+                audio.pause();
+                audio.currentTime = 0; // Tua về đầu
+                if (onEndedCallback) onEndedCallback();
+            });
+        }
     },
 
-    stopIntroVideo: function() {
-        var video = document.getElementById("intro-video-player");
-        video.pause();
-        this.switchScreen("screen-players"); // Chuyển sang màn giới thiệu
+    playBgMusic: function(url, onEndedCallback) {
+        this.stopAllMedia();
+
+        var audio = document.getElementById("bg-music-player");
+        if (audio) {
+            $(audio).find("source").attr("src", url);
+            audio.load();
+            // Giảm âm lượng một chút để không át tiếng MC/Video khác (nếu có)
+            audio.volume = 0.5;
+            audio.play().catch(e => console.log("Cần tương tác để phát nhạc:", e));
+
+            $(audio).off("ended").on("ended", function() {
+                GameUI.stopAllMedia();
+                if (onEndedCallback) onEndedCallback();
+            });
+        }
     },
 
-    // Hàm hiển thị danh sách thí sinh
-    renderPlayers: function() {
-        var html = "";
-        GameConfig.players.forEach(function(player, index) {
-            // Nếu chưa có ảnh avatar thật thì dùng ảnh placeholder online
-            var imgSrc = player.avatar;
-            // Kiểm tra nếu không có file ảnh thì dùng ảnh tạm
-            // imgSrc = "https://placehold.co/150x150?text=" + (index + 1);
-
-            html += `
-            <div class="col-md-3 col-sm-6">
-                <div class="player-card">
-                    <img src="${imgSrc}" class="player-avatar" alt="${player.name}" onerror="this.src='https://placehold.co/150?text=User'">
-                    <h4 class="mt-3 text-warning">${player.name}</h4>
-                    <p class="text-light small">${player.school}</p>
-                    <h2 class="score-display bg-primary rounded p-1">0</h2>
-                </div>
-            </div>`;
-        });
-        $("#player-container").html(html);
+    stopBgMusic: function() {
+        this.stopAllMedia();
     },
 
+    // --- VIDEO PLAYER ---
     playVideo: function(sourceUrl, onEndedCallback) {
+        this.stopAllMedia();
         var video = document.getElementById("intro-video-player");
-        var source = video.querySelector("source");
-
-        // Thay đổi source video
-        source.src = sourceUrl;
-        video.load(); // Load lại video mới
+        $(video).find("source").attr("src", sourceUrl);
+        video.load();
 
         this.switchScreen("screen-video");
-
-        // Xóa sự kiện cũ để tránh lặp
-        $(video).off("ended");
-
-        // Gán sự kiện khi video kết thúc
-        $(video).on("ended", function() {
+        $(video).off("ended").on("ended", function() {
+            GameUI.stopAllMedia();
             if (onEndedCallback) onEndedCallback();
         });
-
-        // Tự động play
         video.play().catch(e => console.log("Cần click để chạy video:", e));
     },
 
-    // Hàm hiển thị màn hình chờ của thí sinh
-    showPlayerReady: function(playerIndex) {
-        var p = GameConfig.players[playerIndex];
+    stopIntroVideo: function() {
+        this.stopAllMedia();
+    },
 
-        $("#current-player-avatar").attr("src", p.avatar);
-        $("#current-player-name").text(p.name);
-        $("#current-player-school").text(p.school);
-        $("#current-player-score").text(p.score); // Lấy điểm từ config (nếu có cập nhật)
+    stopAllMedia: function () {
+        var video = document.getElementById("intro-video-player");
+        if (video) {
+            video.pause();
+            video.currentTime = 0; // Tua về đầu
+        }
+        var audio = document.getElementById("bg-music-player");
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0; // Tua về đầu
+        }
+    },
 
-        this.switchScreen("screen-player-ready");
+    // --- SIDEBAR ĐIỂM SỐ ---
+    renderSideScoreboard: function() {
+        var html = "";
+        GameConfig.players.forEach((p, idx) => {
+            html += `
+            <div id="mini-card-${idx}" class="mini-player-card">
+                <img src="${p.avatar}" class="mini-avatar" onerror="this.src='https://placehold.co/50'">
+                <div class="mini-name">${p.name}</div>
+                <div id="mini-score-${idx}" class="mini-score">${p.score}</div>
+            </div>`;
+        });
+        $("#side-scoreboard").html(html);
+    },
+
+    updateSideScore: function(playerIndex, newScore) {
+        $(`#mini-score-${playerIndex}`).text(newScore).css("background", "red");
+        setTimeout(() => $(`#mini-score-${playerIndex}`).css("background", "#0d6efd"), 500);
+
+        GameLogic.saveGame(); // Lưu điểm số ngay lập tức
+    },
+
+    highlightSidePlayer: function(playerIndex) {
+        $(".mini-player-card").removeClass("active");
+        if (playerIndex !== null) $(`#mini-card-${playerIndex}`).addClass("active");
+    },
+
+    // --- RENDER THÍ SINH (Dùng chung cho màn hình chờ các vòng) ---
+    renderPlayersCommon: function(targetId) {
+        var html = "";
+        GameConfig.players.forEach(p => {
+            html += `
+            <div class="col-md-3 col-sm-6">
+                <div class="player-card">
+                    <img src="${p.avatar}" class="player-avatar" onerror="this.src='https://placehold.co/150?text=User'">
+                    <h4 class="mt-3 text-warning">${p.name}</h4>
+                    <p class="text-light small">${p.school}</p>
+                    <h2 class="score-display bg-primary rounded p-1">${p.score}</h2>
+                </div>
+            </div>`;
+        });
+        $("#" + targetId).html(html);
+    },
+
+    // Wrapper để giữ tương thích code cũ
+    renderPlayers: function() {
+        this.renderPlayersCommon("player-container");
+    },
+
+    // --- THÊM HÀM MỚI CHO VÒNG 3 ---
+    renderTTIntroPlayers: function() {
+        this.renderPlayersCommon("tt-player-summary");
     }
 };
+
+
+Object.assign(GameUI, {
+    // --- HÀM MỚI: RENDER MÀN HÌNH TỔNG KẾT ---
+    renderSummary: function(winner, allPlayersSorted) {
+        this.switchScreen("screen-summary");
+
+        // 1. Hiển thị Quán quân
+        $("#winner-avatar").attr("src", winner.avatar);
+        $("#winner-name").text(winner.name);
+        $("#winner-score").text(winner.score);
+
+        // 2. Hiển thị danh sách các thí sinh còn lại (Á quân, Quý quân...)
+        var html = "";
+        allPlayersSorted.forEach((p, index) => {
+            // Bỏ qua quán quân (đã hiện to ở trên rồi)
+            if (index === 0) return;
+
+            var rankTitle = (index === 1) ? "🥈 Á Quân" : (index === 2 ? "🥉 Quý Quân 1" : "🥉 Quý Quân 2");
+            var cardColor = (index === 1) ? "border-secondary" : "border-dark";
+
+            html += `
+            <div class="col-md-3 col-6 mb-3">
+                <div class="card bg-dark text-white ${cardColor} h-100 shadow">
+                    <div class="card-body text-center">
+                        <img src="${p.avatar}" width="80" height="80" class="rounded-circle mb-2 border border-white">
+                        <h5 class="card-title text-truncate">${p.name}</h5>
+                        <h3 class="text-warning">${p.score}</h3>
+                        <span class="badge bg-secondary">${rankTitle}</span>
+                    </div>
+                </div>
+            </div>`;
+        });
+        $("#summary-scoreboard").html(html);
+    }
+});
