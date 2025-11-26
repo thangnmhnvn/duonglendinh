@@ -22,10 +22,12 @@ desktop.ini
 
 # Large media files
 *.mp4
+*.mp3
 #*.tiff
 *.avi
 #*.flv
 *.mov
 *.wmv
+*.wav
 
 /ignore/
