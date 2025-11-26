@@ -14,3 +14,18 @@ Thumbs.db
 desktop.ini
 #/vendor/ # Dành cho các thư viện Composer
 #/node_modules/ # Dành cho các thư viện Node.js (nếu bạn dùng)
+
+# Applications
+*.app
+*.exe
+*.war
+
+# Large media files
+*.mp4
+#*.tiff
+*.avi
+#*.flv
+*.mov
+*.wmv
+
+/ignore/
