@@ -6,8 +6,6 @@ Object.assign(GameUI, {
 
     // 2. Render Câu hỏi & Đáp án (SỬA LẠI)
     renderTTQuestion: function(q) {
-        this.switchScreen("screen-tt-play");
-
         // Điền nội dung câu hỏi
         $("#tt-question-content").text(q.content);
 

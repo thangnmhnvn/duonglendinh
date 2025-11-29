@@ -1,6 +1,8 @@
 var GameUI = {
     // --- QUẢN LÝ MÀN HÌNH ---
     switchScreen: function(screenId) {
+        this.stopBgMusic();
+
         $(".game-screen").hide();
         $("#" + screenId).fadeIn();
 
@@ -11,23 +13,24 @@ var GameUI = {
 
         // 2. Xử lý Sidebar (Giữ nguyên logic cũ)
         if (["screen-gameplay", "screen-vc-play", "screen-tt-play", "screen-vd-play"].includes(screenId)) {
-            $("#side-scoreboard").fadeIn();
+            $("#side-scoreboard").addClass('active');
+            $("body").addClass('show-side-scoreboard');
             this.renderSideScoreboard();
+            if(screenId !== "screen-tt-play") GameUI.highlightSidePlayer(GameLogic.currentPlayerIndex);
+            GameUI.playBgMusic({'url':GameConfig.paths.audio.startQuestion,'startOn': 0, 'endOn': 4, 'volume': 0.3}, () => {
+                GameUI.playBgMusic({'url':GameConfig.paths.audio.bgRound}, () => {});
+            });
         } else {
-            $("#side-scoreboard").fadeOut();
+            $("#side-scoreboard").removeClass('active');
+            $("body").removeClass('show-side-scoreboard');
         }
 
         // 3. XỬ LÝ NHẠC NỀN (MỚI THÊM)
         // Nếu vào màn hình 4 thí sinh -> Chơi nhạc
-        if (screenId === "screen-players") {
-            console.log(screenId);
-            this.playBgMusic(GameConfig.paths.audio.bgAudio1, function () {
-                GameUI.playBgMusic(GameConfig.paths.audio.bgAudio2, () => {});
+        if(["screen-players", "screen-vc-intro", "screen-tt-intro", "screen-vd-intro"].includes(screenId)) {
+            this.playBgMusic({'url':GameConfig.paths.audio.bgAudio1}, function () {
+                GameUI.playBgMusic({'url':GameConfig.paths.audio.bgAudio2, 'loop': true}, () => {});
             });
-        }
-        // Nếu chuyển sang màn hình khác -> Tắt nhạc
-        else {
-            this.stopBgMusic();
         }
 
         // 4. Auto-save (Giữ nguyên logic cũ)
@@ -36,13 +39,15 @@ var GameUI = {
         }
     },
 
-    playMusic: function(url, onEndedCallback) {
+    playMusic: function({
+                            url = '',
+                            loop = false
+                        } = {}, onEndedCallback) {
         var audio = document.getElementById("music-player");
         if (audio) {
             $(audio).find("source").attr("src", url);
             audio.load();
-            // Giảm âm lượng một chút để không át tiếng MC/Video khác (nếu có)
-            audio.volume = 0.5;
+            audio.loop = loop;
             audio.play().catch(e => console.log("Cần tương tác để phát nhạc:", e));
 
             $(audio).off("ended").on("ended", function() {
@@ -53,21 +58,47 @@ var GameUI = {
         }
     },
 
-    playBgMusic: function(url, onEndedCallback) {
+    stopMusic: function () {
+        var audio = document.getElementById("music-player");
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0; // Tua về đầu
+        }
+    },
+
+    playBgMusic: function(args = {}, onEndedCallback) {
+        const defaults = {
+            url: '',
+            startOn: 0,
+            endOn: false,
+            volume: 0.5,
+            loop: false
+        };
+        args = { ...defaults, ...args };
+
+
         this.stopAllMedia();
 
         var audio = document.getElementById("bg-music-player");
         if (audio) {
-            $(audio).find("source").attr("src", url);
+            $(audio).find("source").attr("src", args.url);
             audio.load();
-            // Giảm âm lượng một chút để không át tiếng MC/Video khác (nếu có)
-            audio.volume = 0.5;
+            audio.currentTime = args.startOn; // Tua về đầu
+            audio.loop = args.loop;
+            audio.volume = args.volume;
             audio.play().catch(e => console.log("Cần tương tác để phát nhạc:", e));
 
             $(audio).off("ended").on("ended", function() {
                 GameUI.stopAllMedia();
                 if (onEndedCallback) onEndedCallback();
             });
+
+            if(args.endOn) {
+                setTimeout(function () {
+                    $(audio).trigger("ended");
+                }, (args.endOn - args.startOn) * 1000);
+            }
+
         }
     },
 
@@ -165,6 +196,7 @@ var GameUI = {
 Object.assign(GameUI, {
     // --- HÀM MỚI: RENDER MÀN HÌNH TỔNG KẾT ---
     renderSummary: function(winner, allPlayersSorted) {
+        GameUI.playMusic({'url':GameConfig.paths.audio.endGame}, () => {});
         this.switchScreen("screen-summary");
 
         // 1. Hiển thị Quán quân
@@ -194,5 +226,34 @@ Object.assign(GameUI, {
             </div>`;
         });
         $("#summary-scoreboard").html(html);
+    }
+});
+
+Object.assign(GameUI, {
+    // Hàm thay thế GameUI.showNotification()
+    // callback: Hàm sẽ chạy sau khi người dùng bấm nút "ĐÃ HIỂU"
+    showNotification: function(message, callback) {
+        $("#notify-content").html(message); // Dùng html để có thể xuống dòng <br>
+
+        var modal = new bootstrap.Modal(document.getElementById('modalNotify'));
+        modal.show();
+
+        // Xử lý sự kiện bấm nút
+        $("#btn-confirm-notify").off("click").on("click", function() {
+            modal.hide();
+            if (callback) callback();
+        });
+    },
+
+    // Hàm thay thế GameUI.showConfirm()
+    showConfirm: function(message, onYes) {
+        $("#confirm-content").html(message);
+        var modal = new bootstrap.Modal(document.getElementById('modalConfirm'));
+        modal.show();
+
+        $("#btn-yes-confirm").off("click").on("click", function() {
+            modal.hide();
+            if (onYes) onYes();
+        });
     }
 });

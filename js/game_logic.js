@@ -117,10 +117,10 @@ var GameLogic = {
 
     // --- HÀM RESET GAME (XÓA DATA & RELOAD) ---
     resetGame: function() {
-        if (confirm("Bạn có chắc chắn muốn XÓA TOÀN BỘ dữ liệu và chơi lại từ đầu?")) {
-            localStorage.removeItem(this.saveKey);
+        GameUI.showConfirm("Bạn có chắc chắn muốn XÓA TOÀN BỘ dữ liệu và chơi lại từ đầu?", function () {
+            localStorage.removeItem(GameLogic.saveKey);
             location.reload();
-        }
+        });
     },
 
     startGame: function() {
@@ -146,17 +146,11 @@ Object.assign(GameLogic, {
     transitionToSummary: function() {
         console.log("Kết thúc chương trình. Chuyển sang màn hình tổng kết.");
 
-        // 1. Chơi nhạc/video chiến thắng
-        GameUI.playVideo(GameConfig.paths.endGameVideo, function() {
-            GameUI.stopIntroVideo();
+        var sortedPlayers = [...GameConfig.players].sort((a, b) => b.score - a.score);
+        var winner = sortedPlayers[0];
 
-            // 2. Tìm người chiến thắng
-            // Copy danh sách để không ảnh hưởng mảng gốc, sau đó sắp xếp giảm dần theo điểm
-            var sortedPlayers = [...GameConfig.players].sort((a, b) => b.score - a.score);
-            var winner = sortedPlayers[0];
 
-            // 3. Hiển thị màn hình tổng kết
-            GameUI.renderSummary(winner, sortedPlayers);
-        });
+        // 3. Hiển thị màn hình tổng kết
+        GameUI.renderSummary(winner, sortedPlayers);
     }
 });

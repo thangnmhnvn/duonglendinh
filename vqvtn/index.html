@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Vòng quay học sinh - Chiếc Nón Kỳ Diệu</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        :root {
+            --size: 480px;
+            --border: 10px;
+        }
+
+        h1{ margin:8px 0 0; font-size:22px; font-weight:800; letter-spacing:.2px;    text-align: center;}
+        .wrap{ position:relative; width:var(--size); height:var(--size); margin:22px auto 8px; }
+        #wheel{
+            width:100%; height:100%; display:block; border-radius:50%;
+            box-shadow: 0 12px 30px rgba(0,0,0,.18), inset 0 0 0 var(--border) #111;
+            cursor:pointer; background:#fff;
+        }
+        /* Mũi tên hướng xuống */
+        .pointer{
+            position:absolute; left:50%; top:-14px; transform:translateX(-50%);
+            width:0; height:0;
+            border-left: 22px solid transparent;
+            border-right:22px solid transparent;
+            border-top: 44px solid #e11d48; /* đỏ, hướng xuống */
+            filter: drop-shadow(0 6px 6px rgba(0,0,0,.25));
+            z-index:5;
+        }
+        .hint{ font-size:14px; opacity:.8; margin:6px 0 0 }
+        .result{
+            margin-top:10px; font-size:20px; font-weight:800; color:#0ea5e9;
+            text-shadow: 0 1px 0 #fff;
+        }
+        .bar{
+            width:min(560px, 92vw); height:10px; border-radius:999px; background:#e5e7eb; overflow:hidden; margin-top:10px;
+        }
+        .fill{ height:100%; width:0%; background:linear-gradient(90deg,#34d399,#22c55e); transition:width .1s; }
+    </style>
+
+    <script>
+        window.MathJax = {
+            tex: {
+                // Cho phép $...$ và \(...\) cho công thức nằm trong dòng (inline)
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                // Cho phép $$...$$ và \[...\] cho công thức hiển thị riêng (display)
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                // Tối ưu hóa render bằng cách chỉ xử lý một số class nhất định (tùy chọn)
+                ignoreHtmlClass: 'no-mathjax',
+                processHtmlClass: 'process-mathjax'
+            }
+        };
+    </script>
+
+    <script id="MathJax-script" async src="mathjax.js"></script>
+</head>
+<body>
+
+<div id="welcomeScreen">
+    <h1 class="title">VÒNG QUAY VÀ TRẮC NGHIỆM</h1>
+    <button id="startBtn">🚀 Bắt đầu ngay</button>
+</div>
+<div id="man_vongquay" style="display: none">
+
+    <div class="left">
+        <h2 id="lopname"></h2>
+        <h3>Danh sách đã gọi</h3>
+        <ul id="studentList"></ul>
+    </div>
+    <div class="right">
+        <button id="to_trochoi" class="btn_r">🎮 Tới Trò Chơi</button>
+        <button id="reset_games" class="btn_r"> Reset game </button>
+        <div id="chon_che_do">
+            <label><input type="checkbox" name="che_do" value="Gọi tên không lặp lại" id="che_do_goi_ten" class="chon_chedo">Gọi tên không lặp lại</label><br>
+        </div>
+    </div>
+    <h1>🎡 VÒNG QUAY MAY MẮN</h1>
+    <div class="wrap">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="960" height="960" title="Nhấn & giữ để lấy lực, thả để quay"></canvas>
+    </div>
+    <div class="bar" aria-hidden="true"><div class="fill" id="chargeFill"></div></div>
+    <div class="hint" id="hint">Giữ chuột (hoặc chạm giữ) vào vòng quay để lấy lực • Tối thiểu quay 5 giây</div>
+    <div class="result" id="result" style="font-size: 36px"></div>
+</div>
+
+<!------------------------------------------------------------- -->
+
+
+<div id="man_trochoi" style="display:none">
+    <div class="right_down">
+        <button id="back_vongquay" class="btn_r">Về Vòng Quay</button>
+    </div>
+    <div id="gameScreen" >
+        <div class="thongtinhocsinh">
+            <span id="ten_hocsinh"  class="tths"></span>
+        </div >
+        <div><img src="trangti.png" alt="trang ti" id="trangti" class="trang_ti">
+            <span class="score" id="score">0 </span></div>
+        <div class="level-bar">
+            <div class="level-track" id="levelTrack"></div>
+            <img src="monkey.png" alt="monkey" id="levelMonkey" class="level-monkey">
+            <div class="level-label" id="levelLabel">0/0</div>
+        </div>
+        <!-- Đồng hồ + gà chạy -->
+        <div class="timer">
+            <span id="timer">0</span>
+            <img src="gadungyen.png" alt="chickenTimer" id="chickenTimer" class="timer-chicken">
+        </div>
+
+        <!-- Gà phản ứng ở dưới -->
+        <div class="chicken-box"><img src="chicken_stand.png" alt="chicken" id="chickenReaction" class="chicken-reaction"></div>
+        <div class="config" style="margin-bottom:0;">
+            <label><input type="checkbox" name="random_question" value="1" checked>Trộn ngẫu nhiên câu hỏi và câu trả lời</label><br>
+        </div>
+        <div class="config" style="margin-top:0;">
+            <label>⏳ Thời gian mỗi câu: <input type="number" id="timeConfig" value="15" min="5"></label>
+            <label>🔢 Số câu hỏi: <input type="number" id="countConfig" value="3" min="1" max="10"></label>
+        </div>
+        <div class="container">
+
+            <div class="question" id="question">Nhấn "Bắt đầu" để chơi!</div>
+            <div class="options" id="options"></div>
+
+            <button class="button-with-icon controls" id="nextBtn" onclick="nextQuestion()">
+                <svg
+                        class="icon"
+                        id="Play"
+                        viewBox="0 0 48 48"
+                        xmlns="http://www.w3.org/2000/svg"
+                >
+                    <path
+                            class="color000000 svgShape"
+                            fill="#ffffff"
+                            d="M12 39c-.549 0-1.095-.15-1.578-.447A3.008 3.008 0 0 1 9 36V12c0-1.041.54-2.007 1.422-2.553a3.014 3.014 0 0 1 2.919-.132l24 12a3.003 3.003 0 0 1 0 5.37l-24 12c-.42.21-.885.315-1.341.315z"
+                    ></path>
+                </svg>
+                <span class="text">Play</span>
+            </button>
+
+        </div>
+    </div>
+
+</div>
+<!-- Âm thanh -->
+<audio id="tickSound" src="vongquay.mp3" preload="auto"></audio>
+<audio id="winSoundvq" src="chucmung.mp3" preload="auto"></audio>
+<audio id="correctSound" src="crrec.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="wrong.mp3" preload="auto"></audio>
+<audio id="countdownSound" src="demnguoc.mp3" preload="auto"></audio>
+<audio id="winSound" src="win.mp3" preload="auto"></audio>
+<script src="confetti.browser.min.js"></script>
+<script>
+    /* ======= CẤU HÌNH ======= */
+
+
+    /* Thay danh sách tên học sinh vào dây*/
+
+
+    /*Kết thúc danh sách*/
+
+    // tối đa tốc độ khi giữ (rad/khung hình ~ 60fps)
+    const MAX_ANGULAR_VEL = 0.45;
+    const ACCEL_PER_MS = 0.00028;     // tăng tốc khi đang giữ
+    const DECAY = 0.985;              // hệ số giảm tốc khi thả (mỗi khung)
+    const MIN_SPIN_MS =   5000;         // tối thiểu quay 5 giây
+    /* ======================== */
+
+    const canvas = document.getElementById('wheel');
+    const ctx = canvas.getContext('2d');
+    const resultEl = document.getElementById('result');
+    const hintEl = document.getElementById('hint');
+    const chargeFill = document.getElementById('chargeFill');
+
+    const size = canvas.width;              // 960
+    const R = size/2;                       // 480
+    let rotation = 0;                       // góc hiện tại (rad)
+    let omega = 0;                          // vận tốc góc (rad/frame)
+    let holding = false;                    // đang giữ để lấy lực
+    let spinning = false;                   // đang quay (sau khi thả)
+    let lastTime = 0;                       // timestamp khung trước
+    let holdStart = 0;                      // mốc thời gian bắt đầu giữ
+    let releaseStart = 0;                   // mốc thả chuột
+    let lastIndexUnderPointer = -1;         // để phát tick khi đổi ô
+    let vt=0;
+    let	winner;
+    let hocSinhDangChoi = null;
+    let diemDangChoi = 0;
+    let bangDiem = {};
+    /* ========= ÂM THANH (Web Audio – không cần file) ========= */
+    let audioCtx;
+    let temp=true;
+
+
+
+
+    let current = -1, score = 0, timer = 0, timerId = null, answered = false;
+    let timePerQuestion = 15, totalQuestions = 3;
+
+
+    const qEl = document.getElementById("question");
+    const optsEl = document.getElementById("options");
+    const scoreEl = document.getElementById("score");
+    const timerEl = document.getElementById("timer");
+    const chickenReactionEl = document.getElementById("chickenReaction");
+    const chickenTimerEl = document.getElementById("chickenTimer"); // gà cạnh đồng hồ
+    const nextBtn = document.getElementById("nextBtn");
+    const winSound = document.getElementById("winSound");
+    const correctSound = document.getElementById("correctSound");
+    const wrongSound = document.getElementById("wrongSound");
+    const countdownSound = document.getElementById("countdownSound");
+    //Khỉ leo cot
+    const levelMonkey = document.getElementById("levelMonkey");
+    const levelLabel = document.getElementById("levelLabel");
+    let correctCount = 0; // số câu đúng
+
+
+    const startBtn = document.getElementById("startBtn");
+    const welcomeScreen = document.getElementById("welcomeScreen");
+    const gameScreen = document.getElementById("gameScreen");
+    //const lopname="LỚP 7A";
+    let  lopname ="";
+    let  students =[];
+    let  studentsbd =[];
+    let questions = [];
+    let arc=null;
+    let questionPool = [];
+    let CLASS_KEY="";
+    //let questionPool = [];
+    // Hàm xáo trộn mảng
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // Lấy ngẫu nhiên câu hỏi và trộn opts
+    function getRandomQuestions(count) {
+        if (questionPool.length < count) {
+            questionPool = [...allQuestions];
+        }
+
+        let ranQuestion = document.querySelector('[name="random_question"]').checked;
+        // Xáo trộn pool
+        if(ranQuestion) shuffleArray(questionPool);
+
+        const selected = questionPool.slice(0, count);
+        questionPool.splice(0, count); // loại bỏ câu đã lấy
+
+        // Trộn opts và cập nhật answer cho từng câu
+        selected.forEach(q => {
+            const correctAnswer = q.opts[q.answer]; // lưu đáp án đúng
+            if(ranQuestion) shuffleArray(q.opts);                   // trộn các lựa chọn
+            q.answer = q.opts.indexOf(correctAnswer); // cập nhật vị trí đáp án đúng
+        });
+
+        return selected;
+    }
+    const data = {
+        "tenlop":"Lớp 6E",
+        "type":"questions",
+        "students":["Nguy\u1ec5n Tr\u01b0\u1eddng An","L\u00ea Nh\u1eadt Anh","Nguy\u1ec5n L\u00ea Ho\u00e0i Anh","V\u0169 Thi\u00ean \u00c2n","Nguy\u1ec5n B\u0103ng B\u0103ng","V\u0169 Qu\u1ef3nh Chi","Nguy\u1ec5n Qu\u1ef3nh Chi","Nguy\u1ec5n Nh\u00e2n Chinh","Nguy\u1ec5n Tr\u1ecdng \u0110\u1ea1t","Nguy\u1ec5n Duy \u0110\u00f4ng","Nguy\u1ec5n Minh \u0110\u1ee9c","L\u00ea Ti\u1ebfn D\u0169ng","Tr\u1ea7n Th\u1ecb Thu H\u00e0","\u0110\u1eb7ng An Khang","V\u0169 T\u1eed Kh\u00e1nh","B\u00f9i \u0110\u00ecnh T\u00f9ng L\u00e2m","Tr\u1ea7n B\u1ea3o L\u00e2m","Nguy\u1ec5n Kh\u00e1nh Linh","Nguy\u1ec5n V\u0169 Minh","Nguy\u1ec5n Tu\u1ec7 Minh","V\u0169 Duy Nam","Ng. Th\u1ecb Kim Ng\u00e2n","Ho\u00e0ng Tr\u1ecdng Ngh\u0129a","Nguy\u1ec5n Th\u1ecb Th\u1ea3o Nguy\u00ean","Nguy\u1ec5n Tu\u1ec7 Nhi","Nguy\u1ec5n Qu\u1ef3nh Ph\u01b0\u01a1ng","Nguy\u1ec5n Nh\u01b0 Qu\u1ef3nh","V\u01b0\u01a1ng B\u0103ng T\u00e2m","Nguy\u1ec5n Minh T\u00f9ng","Nguy\u1ec5n Th\u1ea3o V\u00e2n","Nguy\u1ec5n Nh\u1eadt Vy","Tr\u1ea7n H\u00e0 Vy"],
+        "questions":[{"q":"Từ nào sau đây là từ láy hoàn toàn?","opts":["Xanh xao","Xinh xắn","Mặt mũi","Thăm thẳm"],"answer":3},{"q":"Trong câu 'Em làm bài tập về nhà.', bộ phận nào là chủ ngữ?","opts":["Em","làm bài tập","về nhà","bài tập"],"answer":0},{"q":"Biện pháp tu từ nào được sử dụng trong câu 'Mặt trời là lòng đỏ quả trứng khổng lồ'?","opts":["So sánh","Nhân hóa","Ẩn dụ","Hoán dụ"],"answer":0},{"q":"Từ nào là tính từ chỉ tính cách?","opts":["Cái bàn","Vui vẻ","Nhảy","Cao"],"answer":1},{"q":"Thành phần nào trả lời cho câu hỏi 'Khi nào?' trong câu 'Hôm qua, em được điểm 10.'","opts":["Em","được điểm 10","Hôm qua","điểm 10"],"answer":2},{"q":"Từ nào là từ láy bộ phận?","opts":["Lặng lẽ","Xinh xắn","Chăm chỉ","Lung linh"],"answer":1},{"q":"Từ nào là đại từ nhân xưng ngôi thứ nhất (số ít)?","opts":["Bạn","Họ","Tôi","Các bạn"],"answer":2},{"q":"Biện pháp tu từ nào được sử dụng trong câu 'Những ngôi sao thức ngoài kia'?","opts":["So sánh","Nhân hóa","Ẩn dụ","Hoán dụ"],"answer":1},{"q":"Từ nào là từ chỉ đặc điểm của sự vật?","opts":["Ngôi nhà","Chạy nhảy","Xanh biếc","Ăn uống"],"answer":2},{"q":"Trong câu 'Chú bộ đội dũng cảm bảo vệ Tổ quốc.', từ nào là danh từ chỉ người?","opts":["dũng cảm","bảo vệ","Chú bộ đội","Tổ quốc"],"answer":2}]    };
+
+    // Nếu có tenlop + students
+    if (data.tenlop && data.students) {
+        lopname = data.tenlop || "";
+        students = data.students || [];
+        studentsbd = [...students];
+        arc = (2*Math.PI)/students.length;
+        CLASS_KEY = "vongquaytracnghiem"+lopname;
+
+        document.getElementById("lopname").innerText = lopname.toUpperCase();
+    }
+
+    // Nếu có câu hỏi
+    if (data.type === "questions" && data.questions) {
+        questionPool = data.questions || [];
+
+    }
+
+
+    function getArc() {
+        return (2*Math.PI)/students.length;
+    }
+
+
+    document.getElementById("to_trochoi").addEventListener("click", function() {
+        if (!hocSinhDangChoi) {
+            alert("⚠️ Hãy chọn một học sinh trước!");
+            return;
+        }
+        document.getElementById("man_vongquay").style.display = "none";
+        document.getElementById("man_trochoi").style.display = "block";
+        document.getElementById("ten_hocsinh").innerText = "👤: " + hocSinhDangChoi;
+
+        // Reset điểm mỗi lần chơi
+        diemDangChoi = 0;
+        //document.getElementById("diem").innerText = diemDangChoi;
+
+    });
+    document.getElementById("reset_games").addEventListener("click", function() {
+        if (confirm("Bạn có chắc muốn RESET danh sách không?")) {
+            localStorage.removeItem(CLASS_KEY); // Xóa dữ liệu trong storage
+            renderStudents();
+            students = [...studentsbd]; // studentsbd là bản sao danh sách ban đầu
+            console.log(students);
+            drawWheel();
+        }
+
+    });
+    // Nút quay về vòng quay
+    document.getElementById("back_vongquay").addEventListener("click", function() {
+        // Cộng điểm cho học sinh
+        if (hocSinhDangChoi) {
+            bangDiem[hocSinhDangChoi] = (bangDiem[hocSinhDangChoi] || 0) + diemDangChoi;
+            // Hiển thị điểm ngay trong danh sách
+            document.querySelectorAll("#ds_hocsinh li").forEach(li => {
+                if (li.getAttribute("data-ten") === hocSinhDangChoi) {
+                    li.innerText = hocSinhDangChoi + " - Điểm: " + bangDiem[hocSinhDangChoi];
+                }
+            });
+            updateScore(hocSinhDangChoi, score);
+        }
+        resetTroChoi();
+        document.getElementById("man_trochoi").style.display = "none";
+        document.getElementById("man_vongquay").style.display = "block";
+    });
+    let checkBox = document.getElementById("che_do_goi_ten");
+
+    // Set trạng thái: tích vào
+    checkBox.checked = true;
+    document.getElementById("che_do_goi_ten").addEventListener("change", function() {
+        if (this.checked) {
+            temp=true;
+
+        } else {
+            temp=false;
+        }
+    });;
+    function playTick() {
+        //tickSound.currentTime = 0; // tua về đầu để có thể phát liên tiếp
+        tickSound.play();
+    }
+
+    function playWin() {
+        winSoundvq.currentTime = 0;
+        winSoundvq.play();
+    }
+    function stopTick() {
+        tickSound.pause();
+        tickSound.currentTime = 0;
+    }
+
+    function fadeOut(audio, duration = 3000) {
+        if (!audio) return;
+        let step = audio.volume / (duration / 100); // giảm mỗi 100ms
+        let fade = setInterval(() => {
+            if (audio.volume - step > 0) {
+                audio.volume = Math.max(0, audio.volume - step);
+            } else {
+                audio.pause();
+                audio.currentTime = 0;
+                audio.volume = 1; // reset lại volume để lần sau phát bình thường
+                clearInterval(fade);
+            }
+        }, 100);
+    }
+    /* ========================================================= */
+
+    /* Vẽ vòng quay */
+    function drawWheel() {
+        ctx.clearRect(0,0,size,size);
+        // nền viền trong
+        ctx.save();
+        ctx.translate(R, R);
+        ctx.rotate(rotation);
+        if(temp==true){
+            arc=getArc();
+        }
+        for (let i=0;i<students.length;i++){
+            const start = i*arc;
+            const end = start + arc;
+            // màu rực rỡ theo HSL
+            const hue = Math.round(i * (360/students.length));
+            ctx.beginPath();
+            ctx.moveTo(0,0);
+            ctx.arc(0,0,R-8, start, end);
+            ctx.closePath();
+            ctx.fillStyle = `hsl(${hue} 85% 55%)`;
+            ctx.fill();
+
+            // đường phân cách
+            ctx.strokeStyle = 'rgba(255,255,255,.6)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0,0,R-8,start,end);
+            ctx.stroke();
+
+            // label
+            ctx.save();
+            ctx.rotate(start + arc/2);
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 24px system-ui, Arial';
+            ctx.textAlign = 'right';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,.35)';
+            ctx.shadowBlur = 4;
+            ctx.fillText(students[i], R-26, 0);
+            ctx.restore();
+        }
+        // nắp trung tâm
+        ctx.beginPath();
+        ctx.arc(0,0,38,0,2*Math.PI);
+        ctx.fillStyle = '#111';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(0,0,28,0,2*Math.PI);
+        ctx.fillStyle = '#fff';
+        ctx.fill();
+        ctx.restore();
+    }
+
+    /* Lấy index tại hướng mũi tên (mũi tên ở TOP, chỉ xuống) */
+    function indexUnderPointer(rot){
+        if(temp==true){
+            arc=getArc();
+        }
+        // công thức tương thích với mũi tên top: +90deg
+        const degrees = rot * 180/Math.PI + 90;
+        const arcd = arc * 180/Math.PI;
+        let idx = Math.floor((360 - ((degrees % 360)+360)%360) / arcd);
+        idx = (idx % students.length + students.length) % students.length;
+        return idx;
+    }
+
+    /* Vòng lặp khung hình */
+    function tick(ts){
+        if (!lastTime) lastTime = ts;
+        const dt = Math.min(32, ts - lastTime); // ms, clamp để ổn định
+        lastTime = ts;
+
+        // nếu đang giữ: tăng tốc theo thời gian giữ
+        if (holding){
+            omega += ACCEL_PER_MS * dt;
+            if (omega > MAX_ANGULAR_VEL) omega = MAX_ANGULAR_VEL;
+        }else if (spinning){
+            // giảm tốc
+            omega *= DECAY;
+            // đảm bảo quay tối thiểu MIN_SPIN_MS
+            const elapsedSinceRelease = performance.now() - releaseStart;
+            const minReached = elapsedSinceRelease >= MIN_SPIN_MS;
+            const belowThreshold = omega < 0.0022;
+            if (minReached && belowThreshold){
+                omega = 0;
+                spinning = false;
+                // tính kết quả
+                const idx = indexUnderPointer(rotation);
+                winner = students[idx];
+
+                hintEl.textContent = 'Nhấn & giữ để lấy lực, thả để quay';
+                upper = `🎉 Chúc mừng: ${winner}!`;
+                upper1 = upper.toUpperCase();
+                resultEl.textContent = upper1;
+                fadeOut(tickSound, 2000);
+                playWin();
+                vt=idx;
+                hocSinhDangChoi=students[idx];
+
+// thêm học sinh vào cột trái
+
+                addStudent(hocSinhDangChoi);
+                //const ul = document.getElementById("studentList");
+                //const li = document.createElement("li");
+                //  li.textContent = winner;
+                // ul.appendChild(li);
+            }
+        }
+
+        // cập nhật góc
+        if (omega !== 0){
+            rotation = (rotation + omega) % (2*Math.PI);
+        }
+
+        // tick sound khi đổi ô
+        const currIdx = indexUnderPointer(rotation);
+        if (currIdx !== lastIndexUnderPointer){
+            // phát tick khi đang quay đủ nhanh
+            if (omega > 0.03) playTick();
+            lastIndexUnderPointer = currIdx;
+        }
+
+        drawWheel();
+        requestAnimationFrame(tick);
+    }
+
+    /* Sự kiện tương tác */
+    function onHoldStart(e){
+        students.splice(vt, 1);
+        e.preventDefault();
+        //ensureAudioCtx();
+        if (spinning) return;
+        holding = true;
+        holdStart = performance.now();
+        resultEl.textContent = '';
+        hintEl.textContent = 'Đang lấy lực… thả ra để quay!';
+        // MIN_SPIN_MS=  (rand.nextInt(12 - 8 + 1) + 8)*1000;
+        //    MIN_SPIN_MS = (Math.floor(Math.random() * (12 - 8 + 1)) + 8) * 1000;
+    }
+    function onHoldEnd(e){
+        e && e.preventDefault();
+        if (!holding) return;
+        holding = false;
+        spinning = true;
+        releaseStart = performance.now();
+        hintEl.textContent = 'Đang quay…';
+    }
+
+    // Chuột
+    canvas.addEventListener('mousedown', onHoldStart);
+    window.addEventListener('mouseup', onHoldEnd);
+    canvas.addEventListener('mouseleave', (e)=> holding && onHoldEnd(e));
+    // Cảm ứng
+    canvas.addEventListener('touchstart', onHoldStart, {passive:false});
+    window.addEventListener('touchend', onHoldEnd, {passive:false});
+
+    // Thanh hiển thị “lấy lực”
+    setInterval(()=>{
+        const pct = Math.min(100, Math.round((omega / MAX_ANGULAR_VEL)*100));
+        chargeFill.style.width = (holding ? pct : 0) + '%';
+    }, 60);
+
+
+
+
+
+    /* TRÒ CHƠI*==========================================*/
+
+    startBtn.addEventListener("click", () => {
+        /* Khởi động */
+        drawWheel();
+        requestAnimationFrame(tick);
+        getStudents();
+        renderStudents();
+        // thêm class fadeOut để chạy animation
+        welcomeScreen.classList.add("fadeOut");
+
+        // sau khi hết hiệu ứng (1s) thì ẩn hẳn và hiện game
+        setTimeout(() => {
+            welcomeScreen.style.display = "none";
+            man_vongquay.style.display = "block";
+        }, 1000); // 1000ms = 1s trùng với transition
+    });
+
+    // Cập nhật thanh level
+
+    function updateLevel() {
+        let total = questions.length;
+        let progress = correctCount / total;
+        let barHeight = 500; // chiều cao thanh level
+        let monkeyPos = progress * (barHeight - 60); // 60 là chiều cao con khỉ
+
+        // 🚩 Khi bắt đầu di chuyển -> khỉ leo
+        levelMonkey.src = "monkeyclimb.gif";
+        levelMonkey.style.bottom = monkeyPos + "px";
+        levelLabel.textContent = correctCount + "/" + total;
+
+        // 🚩 Sau khi leo xong -> đổi sang idle hoặc happy
+        setTimeout(() => {
+            if (correctCount === total) {
+                levelMonkey.src = "monkeyhappy.gif"; // leo hết -> vui
+            } else {
+                levelMonkey.src = "monkeyidle.gif"; // chưa hết -> đứng yên
+            }
+        }, 800); // chờ animation leo xong
+    }
+
+
+    function playWin(){
+        winSound.currentTime = 0;
+        winSound.play();
+    }
+
+    function launchConfetti(){
+        // bắn confetti nhiều lần cho đẹp
+        let duration = 6 * 1000; // 3 giây
+        let end = Date.now() + duration;
+
+        (function frame() {
+            confetti({
+                particleCount: 6,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 }
+            });
+            confetti({
+                particleCount: 6,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 }
+            });
+
+            if (Date.now() < end) {
+                requestAnimationFrame(frame);
+            }
+        }());
+    }
+
+
+    function nextQuestion(){
+        clearInterval(timerId);
+        stopCountdownSound();
+        if(current === -1){
+            timePerQuestion = parseInt(document.getElementById("timeConfig").value) || 15;
+            totalQuestions = parseInt(document.getElementById("countConfig").value) || 3;
+
+
+
+            questions = getRandomQuestions(totalQuestions);
+
+            correctCount = 0; // reset
+            updateLevel();    // reset thanh level
+            levelMonkey.src = "monkeyidle.gif";
+
+
+            score = 0;
+            scoreEl.firstChild.textContent = score + " ";
+            current = 0;
+            showQuestion();
+            return;
+        }
+        current++;
+
+        if(current >= questions.length){
+            qEl.textContent = "🎉 Hoàn thành! Tổng điểm: " + score;
+            optsEl.innerHTML = "";
+            nextBtn.textContent = "Chơi lại";
+
+            current = -1;
+            return;
+        }
+        showQuestion();
+    }
+
+    function showQuestion(){
+        timer = timePerQuestion;
+        timerEl.textContent = timer;
+        answered = false;
+        let q = questions[current];
+        qEl.textContent = `Câu ${current+1}/${questions.length}: ${q.q}`;
+        optsEl.innerHTML = "";
+        q.opts.forEach((opt,i)=>{
+            const btn=document.createElement("button");
+            btn.textContent = String.fromCharCode(65+i)+". "+opt;
+            btn.onclick=()=>selectAnswer(i,q.answer,btn);
+            optsEl.appendChild(btn);
+        });
+        nextBtn.style.display="none";
+
+        // 🚩 Khi bắt đầu câu hỏi -> gà chạy
+        chickenTimerEl.src = "ga_chay.gif";
+
+        timerId=setInterval(()=>{
+            timer--;
+            timerEl.textContent=timer;
+            if(timer===10){ playCountdownSound(); }
+            if(timer<=6 && timer>0){
+                timerEl.classList.add("pulse");
+                setTimeout(()=>timerEl.classList.remove("pulse"),500);
+            }
+            if(timer<=0){
+                clearInterval(timerId);
+                // 🚩 Hết giờ -> gà đứng yên
+                chickenTimerEl.src = "gadungyen.png";
+                chickenReactionEl.src = "chicken_buon.png";
+                setTimeout(()=>{ chickenReactionEl.src = "chicken_stand.png"; },3000);
+                setTimeout(()=>{ stopCountdownSound(); },3000);
+                disableOptions();
+                nextBtn.style.display="inline-block";
+                nextBtn.textContent="Tiếp tục";
+            }
+        },1000);
+
+        if (typeof MathJax !== 'undefined') {
+            const questionContainer = document.getElementById('question');
+            if (questionContainer) MathJax.typesetPromise([questionContainer]);
+            const optionsContainer = document.getElementById('options');
+            if (optionsContainer) MathJax.typesetPromise([optionsContainer]);
+        }
+    }
+
+    function selectAnswer(idx,correct,btn){
+        if(answered) return;
+        answered = true;
+        clearInterval(timerId);
+        stopCountdownSound();
+
+        // 🚩 Khi chọn đáp án -> gà đứng yên
+        chickenTimerEl.src = "gadungyen.png";
+
+        const buttons=optsEl.querySelectorAll("button");
+        buttons.forEach((b,i)=>{
+            b.disabled=true;
+            if(i===correct) b.classList.add("correct");
+            if(i===idx && idx!==correct) b.classList.add("wrong");
+        });
+        if(idx===correct){
+            score+=10;
+            scoreEl.firstChild.textContent = score + " ";
+            playCorrect();
+            showChicken("happy");
+
+            correctCount++;
+            updateLevel();
+            updateLevel();
+
+            if(score === questions.length * 10){
+                playWin();
+                launchConfetti();
+                playWin();
+            }
+        } else {
+            playWrong();
+            showChicken("angry");
+        }
+        setTimeout(()=>{
+            nextBtn.style.display="inline-block";
+            nextBtn.textContent = (current >= questions.length-1) ? "Kết thúc" : "Tiếp tục";
+        },800);
+    }
+
+    function disableOptions(){
+        const buttons=optsEl.querySelectorAll("button");
+        buttons.forEach(b=>{
+            b.disabled=true;
+            b.classList.add("disabled");
+        });
+    }
+
+    function showChicken(state){
+        if(state==="happy"){ chickenReactionEl.src = "chicken_happy.gif"; }
+        else if(state==="angry"){ chickenReactionEl.src = "chicken_angry.gif"; }
+        setTimeout(()=>{ chickenReactionEl.src = "chicken_stand.png"; },3000);
+    }
+
+    function playCorrect(){ correctSound.currentTime=0; correctSound.play(); }
+    function playWrong(){ wrongSound.currentTime=0; wrongSound.play(); }
+    function playCountdownSound(){ countdownSound.currentTime=0; countdownSound.play(); }
+    function stopCountdownSound(){ countdownSound.pause(); countdownSound.currentTime=0; }
+
+
+    // Lấy danh sách từ localStorage
+    function getStudents() {
+        let data = localStorage.getItem(CLASS_KEY);
+        return data ? JSON.parse(data) : [];
+    }
+
+    // Lưu danh sách vào localStorage
+    function saveStudents(students) {
+        localStorage.setItem(CLASS_KEY, JSON.stringify(students));
+    }
+
+    // Hiển thị danh sách ra UI
+    function renderStudents() {
+        let ul = document.getElementById("studentList");
+        let students = getStudents();
+        ul.innerHTML = "";
+        students.forEach(st => {
+            let li = document.createElement("li");
+            li.textContent = `${st.name} - ${st.score} điểm`;
+            ul.appendChild(li);
+        });
+    }
+
+    // ---- SỰ KIỆN Ở VÒNG QUAY ----
+    // Khi quay trúng 1 học sinh -> thêm vào danh sách nếu chưa có
+    function addStudent(name) {
+        let students = getStudents();
+        let exist = students.find(s => s.name === name);
+        if (!exist) {
+            students.push({ name: name, score: 0 });
+            saveStudents(students);
+            renderStudents();
+        }
+    }
+
+    // ---- SỰ KIỆN TRONG TRÒ CHƠI ----
+    // Khi học sinh chơi xong -> cập nhật điểm
+    function updateScore(name, score) {
+        let students = getStudents();
+        let st = students.find(s => s.name === name);
+        if (st) {
+            st.score += score; // cộng thêm điểm
+            saveStudents(students);
+            renderStudents();
+        }
+    }
+    function resetTroChoi() {
+        clearInterval(timerId);
+        stopCountdownSound();
+
+        // Reset biến game
+        score = 0;
+        current = -1;
+        questions = [];
+        correctCount = 0;
+
+        // Reset giao diện
+        scoreEl.firstChild.textContent = "0 ";
+        qEl.textContent = "Nhấn \"Bắt đầu\" để chơi!";
+        optsEl.innerHTML = "";
+        nextBtn.style.display = "inline-block";
+        nextBtn.textContent = "Play";
+
+        // Reset level
+        levelMonkey.src = "monkeyidle.gif";
+        levelMonkey.style.bottom = "0px";
+        levelLabel.textContent = "0/0";
+
+        // Reset gà & đồng hồ
+        timerEl.textContent = "0";
+        chickenTimerEl.src = "gadungyen.png";
+        chickenReactionEl.src = "chicken_stand.png";
+
+        // Reset âm thanh
+        winSound.pause();
+        winSound.currentTime = 0;
+        correctSound.pause();
+        wrongSound.pause();
+        countdownSound.pause();
+        countdownSound.currentTime = 0;
+    }
+
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 Object.assign(GameLogic, {
-    vcTurnOrder: [0, 1, 2, 3, 0, 1, 2, 3],
+    vcTurnOrder: [0, 1, 2, 3],
     vcCurrentTurnIndex: 0,
     currentVCQuestionIndex: null,
     vcStealerIndex: null,
@@ -23,7 +23,12 @@ Object.assign(GameLogic, {
     },
 
     updateVCActivePlayer: function() {
-        if (this.vcCurrentTurnIndex >= this.vcTurnOrder.length) return alert("Vòng thi đã kết thúc!");
+        if (this.vcCurrentTurnIndex >= this.vcTurnOrder.length) {
+            GameUI.showNotification("Đã kết thúc Vòng Vượt Chướng Ngại Vật! Chuyển sang Vòng 3.", function () {
+                GameLogic.transitionToRound3();
+            });
+            return;
+        }
         var idx = this.vcTurnOrder[this.vcCurrentTurnIndex];
 
         // XÓA DÒNG NÀY: GameUI.highlightVCPlayer(idx);
@@ -39,10 +44,11 @@ Object.assign(GameLogic, {
         var pName = GameConfig.players[this.vcTurnOrder[this.vcCurrentTurnIndex]].name;
         GameUI.showVCModal(GameConfig.rounds.vuotChuongNgaiVat.questions[idx], pName);
 
+        GameUI.playMusic({'url':GameConfig.paths.audio.showQuestion}, () => {});
+
         // --- BẮT ĐẦU ĐẾM GIỜ (NGƯỜI CHÍNH) ---
         this.startVCTimer(15, () => {
             // Hết giờ người chính -> Xem như trả lời sai
-            alert("Hết giờ!");
             this.handleMainTimeOut();
         });
     },
@@ -57,15 +63,18 @@ Object.assign(GameLogic, {
             this.vcTimeLeft--;
             GameUI.updateVCTimer(this.vcTimeLeft);
 
-            if (this.vcTimeLeft <= 0) {
+            if (this.vcTimeLeft < 0) {
                 clearInterval(this.vcTimer);
                 if (onTimeout) onTimeout();
             }
+            if (this.vcTimeLeft == 5) GameUI.playMusic({'url':GameConfig.paths.audio.c5giay}, () => {});
+
         }, 1000);
     },
 
     stopVCTimer: function() {
         clearInterval(this.vcTimer);
+        GameUI.stopMusic();
         GameUI.hideVCTimer();
     },
 
@@ -73,7 +82,7 @@ Object.assign(GameLogic, {
     handleMainTimeOut: function() {
         var playerIdx = this.vcTurnOrder[this.vcCurrentTurnIndex];
         // Coi như sai -> Hiện bảng cướp
-        GameUI.showVCAnswerFeedback(-1, false, false); // -1 để không highlight nút nào
+        GameUI.showVCAnswerFeedback(-1, 2, false); // -1 để không highlight nút nào
         this.prepareStealPhase(playerIdx);
     },
 
@@ -83,8 +92,9 @@ Object.assign(GameLogic, {
 
         // --- ĐẾM 15 GIÂY CHO 3 NGƯỜI CÒN LẠI ---
         this.startVCTimer(15, () => {
-            alert("Hết thời gian cướp lượt!");
-            this.closeVCQuestion(); // Không ai cướp -> Đóng luôn
+            // GameUI.showNotification("Hết thời gian cướp lượt!");
+            // this.closeVCQuestion(); // Không ai cướp -> Đóng luôn
+            GameUI.showVCAnswerFeedback(-1, 3, true);
         });
     },
 
@@ -134,7 +144,8 @@ Object.assign(GameLogic, {
         this.stopVCTimer();
 
         this.vcStealerIndex = idx;
-        $("#vc-current-player-name").text(GameConfig.players[idx].name + " (ĐANG CƯỚP LƯỢT)").removeClass("text-warning").addClass("text-danger");
+        $("#vc-current-player-name").text(GameConfig.players[idx].name);
+        $("#vc-answer-text").text('');
         $("#vc-steal-controls").hide();
         $("#vc-answer-options").css("opacity", "1"); // Sáng lại nút bấm
     },

@@ -8,7 +8,6 @@ Object.assign(GameLogic, {
 
     transitionToRound4: function() {
         GameUI.playVideo(GameConfig.paths.vdIntro, function() {
-            GameUI.stopIntroVideo();
             GameUI.renderVDIntroPlayers();
             GameUI.switchScreen("screen-vd-intro");
         });
@@ -23,10 +22,11 @@ Object.assign(GameLogic, {
     // Chuẩn bị lượt cho thí sinh
     prepareVDTurn: function() {
         if (this.vdCurrentTurnIndex >= 4) {
-            alert("Đã kết thúc Vòng Về Đích! Chuẩn bị công bố kết quả chung cuộc.");
+            GameUI.showNotification("Đã kết thúc Vòng Về Đích! Chuẩn bị công bố kết quả chung cuộc.", function () {
+                // GỌI HÀM CHUYỂN SANG MÀN TỔNG KẾT
+                GameLogic.transitionToSummary();
+            });
 
-            // GỌI HÀM CHUYỂN SANG MÀN TỔNG KẾT
-            this.transitionToSummary();
             return;
         }
         var pIdx = this.vdPlayerOrder[this.vdCurrentTurnIndex];
@@ -90,7 +90,7 @@ Object.assign(GameLogic, {
         GameConfig.players[pIdx].score += points;
         GameUI.updateSideScore(pIdx, GameConfig.players[pIdx].score);
 
-        alert(`Chính xác! (+${points}đ)`);
+        GameUI.showNotification(`Chính xác! (+${points}đ)`);
     },
 
     // Người chính trả lời SAI
@@ -102,7 +102,7 @@ Object.assign(GameLogic, {
         if (this.vdIsStarActive) {
             GameConfig.players[pIdx].score -= q.points;
             GameUI.updateSideScore(pIdx, GameConfig.players[pIdx].score);
-            alert(`Sai! Có ngôi sao hy vọng nên bị trừ ${q.points}đ`);
+            GameUI.showNotification(`Sai! Có ngôi sao hy vọng nên bị trừ ${q.points}đ`);
         }
 
         // Mở quyền cướp lượt
@@ -112,13 +112,13 @@ Object.assign(GameLogic, {
     // Chọn người cướp
     selectVDStealer: function(stealerIdx) {
         this.vdStealerIndex = stealerIdx;
-        alert(`Mời ${GameConfig.players[stealerIdx].name} trả lời!`);
+        GameUI.showNotification(`Mời ${GameConfig.players[stealerIdx].name} trả lời!`);
         // Có thể reset đồng hồ 5s nếu muốn
     },
 
     // Xử lý kết quả cướp lượt
     handleVDStealResult: function(isCorrect) {
-        if (this.vdStealerIndex === null) return alert("Chưa chọn người cướp!");
+        if (this.vdStealerIndex === null) return GameUI.showNotification("Chưa chọn người cướp!");
 
         var mainPIdx = this.vdPlayerOrder[this.vdCurrentTurnIndex];
         var q = GameConfig.rounds.veDich.questionSets[mainPIdx][this.vdCurrentQIndex];
@@ -129,13 +129,13 @@ Object.assign(GameLogic, {
             GameConfig.players[this.vdStealerIndex].score += points;
             GameConfig.players[mainPIdx].score -= points; // Luật: Người chính bị trừ điểm câu hỏi
 
-            alert(`Cướp thành công! (+${points}đ)`);
+            GameUI.showNotification(`Cướp thành công! (+${points}đ)`);
         } else {
             // Cướp sai: Trừ điểm người cướp (thường là 50% số điểm câu hỏi)
             var penalty = points / 2;
             GameConfig.players[this.vdStealerIndex].score -= penalty;
 
-            alert(`Cướp sai! (-${penalty}đ)`);
+            GameUI.showNotification(`Cướp sai! (-${penalty}đ)`);
         }
 
         // Cập nhật điểm cả 2
@@ -152,14 +152,14 @@ Object.assign(GameLogic, {
         // Logic đơn giản: Nếu muốn chuyển người phải bấm nút chuyển người thủ công hoặc đếm số câu đã disable
         // Ở đây ta làm đơn giản: Thêm nút "CHUYỂN NGƯỜI TIẾP THEO" vào UI hoặc hỏi
 
-        if (confirm("Chuyển sang thí sinh tiếp theo chưa?")) {
-            this.vdCurrentTurnIndex++;
-            this.prepareVDTurn();
-        } else {
-            // Vẫn ở lại màn hình để chọn câu khác
-            $("#vd-question-content").text("Mời chọn câu hỏi tiếp theo...");
-            $("#vd-answer-area").hide();
-            $("#vd-score-controls").find("button").prop("disabled", false); // Reset buttons
-        }
+        GameUI.showConfirm("Chuyển sang thí sinh tiếp theo chưa?", function () {
+            GameLogic.vdCurrentTurnIndex++;
+            GameLogic.prepareVDTurn();
+        });
+
+        // Vẫn ở lại màn hình để chọn câu khác
+        $("#vd-question-content").text("Mời chọn câu hỏi tiếp theo...");
+        $("#vd-answer-area").hide();
+        $("#vd-score-controls").find("button").prop("disabled", false); // Reset buttons
     }
 });

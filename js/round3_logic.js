@@ -5,7 +5,6 @@ Object.assign(GameLogic, {
 
     transitionToRound3: function() {
         GameUI.playVideo(GameConfig.paths.ttIntro, function() {
-            GameUI.stopIntroVideo();
             GameUI.renderTTIntroPlayers();
             GameUI.switchScreen("screen-tt-intro");
         });
@@ -14,18 +13,23 @@ Object.assign(GameLogic, {
     startTangToc: function() {
         this.ttCurrentQIndex = 0;
         GameUI.renderTTScoringButtons(); // Vẽ nút chấm điểm
+        GameUI.switchScreen("screen-tt-play");
         this.nextTTQuestion();
     },
 
     nextTTQuestion: function() {
         var questions = GameConfig.rounds.tangToc.questions;
         if (this.ttCurrentQIndex >= questions.length) {
-            alert("Đã kết thúc Vòng Tăng Tốc! Chuẩn bị sang Vòng Về Đích.");
+            GameUI.showNotification("Đã kết thúc Vòng Tăng Tốc! Chuyển sang Vòng Về Đích.", function () {
+                GameLogic.transitionToRound4();
+            });
             return;
         }
 
         var q = questions[this.ttCurrentQIndex];
         GameUI.renderTTQuestion(q);
+        this.startTTTimer();
+        GameUI.playMusic({'url':GameConfig.paths.audio.showQuestion}, () => {});
     },
 
     startTTTimer: function() {
@@ -37,6 +41,7 @@ Object.assign(GameLogic, {
             this.ttTimeLeft--;
             GameUI.updateTTTimer(this.ttTimeLeft);
 
+            if (this.ttTimeLeft === 5) GameUI.playMusic({'url':GameConfig.paths.audio.c5giay}, () => {});
             if (this.ttTimeLeft <= 0) {
                 clearInterval(this.ttTimer);
                 this.revealTTAnswer();

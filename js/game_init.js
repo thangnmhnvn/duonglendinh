@@ -11,10 +11,6 @@ $(document).ready(function() {
     $("#btn-start-turn").click(function() {
         GameLogic.startQuestions();
         GameUI.switchScreen("screen-gameplay");
-
-        GameUI.playBgMusic(GameConfig.paths.audio.startQuestion, () => {
-            GameUI.playBgMusic(GameConfig.paths.audio.bgRound, () => {});
-        });
     });
 
     // --- CÁC SỰ KIỆN THANH NAV (ĐÃ SỬA ĐỔI) ---

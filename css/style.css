@@ -10,8 +10,8 @@ body, html {
     color: white;
 }
 
-body {
-    padding-top: 50px;
+body.show-side-scoreboard .game-screen {
+    padding-left: 215px;
 }
 
 /* Tùy chỉnh thanh Nav cho đẹp hơn */
@@ -27,13 +27,31 @@ body {
 }
 
 /* --- Sidebar Điểm Số --- */
-#side-scoreboard {
+.side-scoreboard-wrapper {
     position: fixed;
-    top: 70px; /* Cách đỉnh 70px để tránh thanh Admin Nav */
-    right: 20px; /* Nằm bên phải */
-    width: 180px;
+    top: 0;
+    left: 0;
+    width: 200px;
     z-index: 1000;
-    display: none; /* Mặc định ẩn, JS sẽ bật khi vào game */
+    height: calc(100vh - 48px);
+    overflow: auto;
+    align-content: center;
+    padding: 10px 15px;
+    background: rgba(33,37,41,0.8) !important;
+    display: none;
+}
+body.show-side-scoreboard .side-scoreboard-wrapper {
+    display: block;
+}
+#side-scoreboard {
+    display: none;
+    flex-direction: column;
+    min-height: 100%;
+    /*justify-content: center;*/
+    gap: 20px;
+}
+#side-scoreboard.active {
+    display: flex;
 }
 
 /* Thẻ thí sinh thu nhỏ */
@@ -42,7 +60,6 @@ body {
     border: 1px solid #ffc107; /* Viền vàng */
     border-radius: 10px;
     padding: 10px;
-    margin-bottom: 10px;
     text-align: center;
     transition: all 0.3s;
     backdrop-filter: blur(3px);
@@ -347,4 +364,14 @@ body {
     0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
     50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.8; }
     100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+}
+
+
+#tt-timer {
+    width: 120px;
+    height: 120px;
+    background: rgba(0,0,0,0.5);
+    position: fixed;
+    top: 20px;
+    right: 20px;
 }

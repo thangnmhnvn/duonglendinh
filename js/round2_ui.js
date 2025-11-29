@@ -34,6 +34,7 @@ Object.assign(GameUI, {
 
     // Hàm cập nhật số giây (MỚI)
     updateVCTimer: function(seconds) {
+        if(seconds < 0) seconds = 0;
         $("#vc-timer").text(seconds);
         if (seconds <= 5) {
             $("#vc-timer").addClass("animate-pulse"); // Thêm hiệu ứng nháy nếu muốn
@@ -52,18 +53,29 @@ Object.assign(GameUI, {
         var btn = $("#vc-opt-" + idx);
         var msg = "";
 
-        if (isCorrect) {
+        if (isCorrect === true) {
+            GameUI.playMusic({'url':GameConfig.paths.audio.correct}, () => {});
             btn.removeClass("btn-outline-light").addClass("btn-success");
             msg = isSteal ? "CƯỚP LƯỢT THÀNH CÔNG!" : "CHÍNH XÁC!";
             $("#vc-answer-text").text(msg).addClass("text-success").removeClass("text-danger");
             $("#btn-close-vc").show();
             $(".vc-option-btn").prop("disabled", true);
         } else {
+            GameUI.playMusic({'url':GameConfig.paths.audio.inCorrect}, () => {});
             btn.removeClass("btn-outline-light").addClass("btn-danger").prop("disabled", true);
             if (!isSteal) {
-                $("#vc-answer-text").text("SAI RỒI! MỜI CƯỚP LƯỢT").addClass("text-danger");
+                $("#vc-current-player-name").text('');
+                if (isCorrect === 2) {
+                    $("#vc-answer-text").text("HẾT GIỜ! MỜI CÁC ĐỘI CÒN LẠI").addClass("text-danger");
+                } else {
+                    $("#vc-answer-text").text("SAI RỒI! MỜI CÁC ĐỘI CÒN LẠI").addClass("text-danger");
+                }
             } else {
-                $("#vc-answer-text").text("CƯỚP LƯỢT THẤT BẠI (-10Đ)").addClass("text-danger");
+                if (isCorrect === 3) {
+                    $("#vc-answer-text").text("HẾT GIỜ!").addClass("text-danger");
+                } else {
+                    $("#vc-answer-text").text("TRẢ LỜI SAI (-10Đ)").addClass("text-danger");
+                }
                 $("#btn-close-vc").show();
                 $(".vc-option-btn").prop("disabled", true);
             }

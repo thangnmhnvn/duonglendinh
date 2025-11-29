@@ -26,7 +26,7 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item mx-1">
-                    <button class="btn btn-sm btn-outline-light" id="nav-intro">🏠 Intro</button>
+                    <button class="btn btn-sm btn-outline-light" id="nav-intro">🏠</button>
                 </li>
                 <li class="nav-item mx-1">
                     <button class="btn btn-sm btn-outline-light" id="nav-khoidong">1️⃣ Khởi Động</button>
@@ -48,7 +48,7 @@
     </div>
 </nav>
 
-<div id="side-scoreboard"></div>
+<div class="side-scoreboard-wrapper"><div id="side-scoreboard"></div></div>
 
 <div id="screen-welcome" class="game-screen" style="display: flex;">
     <h1 class="mb-5" style="font-size: 4rem; text-shadow: 2px 2px 4px #000;">ĐƯỜNG LÊN ĐỈNH OLYMPIA</h1>
@@ -188,8 +188,8 @@
         <div class="row justify-content-center">
             <div class="col-md-10">
                 <ul class="list-unstyled text-white fs-5">
-                    <li class="mb-2">🔢 <strong>Số lượng:</strong> 60 câu hỏi (Chọn 8 câu).</li>
-                    <li class="mb-2">🔄 <strong>Lượt chọn:</strong> A -> B -> C -> D (Mỗi người 2 lượt).</li>
+                    <li class="mb-2">🔢 <strong>Số lượng:</strong> 60 câu hỏi.</li>
+                    <li class="mb-2">🔄 <strong>Lượt chọn:</strong> 2 vòng (Mỗi người 2 lượt).</li>
                     <li class="mb-2">👤 <strong>Người chọn:</strong> Đúng +20đ, Sai 0đ.</li>
                     <li class="mb-2">⚡ <strong>Cướp lượt:</strong> Đúng +20đ, Sai -10đ.</li>
                 </ul>
@@ -233,7 +233,8 @@
                 <ul class="list-unstyled text-white fs-5">
                     <li class="mb-2">🔢 <strong>Số lượng:</strong> 4 câu hỏi trắc nghiệm/tư duy.</li>
                     <li class="mb-2">⏱️ <strong>Thời gian:</strong> 30 giây suy nghĩ.</li>
-                    <li class="mb-2">🏆 <strong>Điểm số:</strong> Nhanh nhất <strong>40đ</strong>, Nhì <strong>30đ</strong>, Ba <strong>20đ</strong>, Tư <strong>10đ</strong>.</li>
+                    <li class="mb-2">👤 <strong>Cách trả lời:</strong> Viết ra bảng nhỏ. Hết giờ MC kiểm tra.</li>
+                    <li class="mb-2">🏆 <strong>Trả lời đúng:</strong>  30 điểm.</li>
                     <li class="mb-2">❌ <strong>Trả lời sai:</strong> 0 điểm.</li>
                 </ul>
             </div>
@@ -248,12 +249,13 @@
 </div>
 
 <div id="screen-tt-play" class="game-screen container-fluid" style="overflow-y: auto;">
+    <div id="tt-timer" class="display-1 fw-bold text-white border border-4 border-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+         style="width: 120px; height: 120px; background: rgba(0,0,0,0.5);">30</div>
+
     <div class="d-flex flex-column h-100 align-items-center pt-4">
 
-        <div class="w-100 text-center position-relative mb-3" style="max-width: 1000px;"> <div id="tt-timer" class="display-1 fw-bold text-white border border-4 border-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
-                                                                                               style="width: 120px; height: 120px; background: rgba(0,0,0,0.5);">
-            30
-        </div>
+        <div id="tt-question-area" class="w-100 text-center position-relative mb-3" style="max-width: 1000px;" >
+
             <div class="bg-light text-dark p-4 rounded-4 shadow mx-auto">
                 <h3 id="tt-question-content" class="fw-bold m-0" style="line-height: 1.4;">Đang tải câu hỏi...</h3>
             </div>
@@ -267,7 +269,7 @@
             </div>
         </div>
 
-        <div class="w-100 mt-auto pb-5 text-center" style="max-width: 1000px;">
+        <div class="w-100 mt-auto pb-5 mb-5 text-center" style="max-width: 1000px;">
 
             <div id="tt-scoring-area" class="mb-4 p-3 rounded" style="display: none; background: rgba(0,0,0,0.5); border: 1px solid #ffc107;">
                 <div class="text-white mb-3 fs-5">CHỌN THÍ SINH TRẢ LỜI ĐÚNG (+30Đ):</div>
@@ -276,7 +278,6 @@
             </div>
 
             <div class="d-flex justify-content-center gap-2 flex-wrap">
-                <button class="btn btn-primary btn-lg px-4" onclick="GameLogic.startTTTimer()">⏱️ TÍNH GIỜ</button>
                 <button class="btn btn-warning btn-lg px-4" onclick="GameLogic.revealTTAnswer()">🔓 HIỆN ĐÁP ÁN</button>
                 <button class="btn btn-secondary btn-lg px-4" onclick="GameLogic.finishTTQuestion()">⏭️ CÂU TIẾP THEO</button>
             </div>
@@ -318,7 +319,7 @@
 </div>
 
 <div id="screen-vd-play" class="game-screen container-fluid" style="overflow-y: auto;">
-    <div class="d-flex flex-column h-100 align-items-center pt-3" style="padding-right: 200px;">
+    <div class="d-flex flex-column h-100 align-items-center pt-3">
         <div class="w-100 text-center mb-2">
             <h3 class="text-white">Lượt thi của: <span id="vd-current-player-name" class="text-warning fw-bold">...</span></h3>
             <div id="vd-question-list" class="d-flex justify-content-center gap-2 mt-2">
@@ -412,14 +413,12 @@
 
             <div class="modal-footer justify-content-center bg-secondary bg-opacity-25">
                 <div id="vc-status-bar" class="w-100 text-center mb-2">
-                    <span class="fs-5 text-white">Người trả lời: <strong id="vc-current-player-name" class="text-warning display-6">...</strong></span>
+                    <span class="fs-5 text-white"><strong id="vc-current-player-name" class="text-warning display-6">...</strong></span>
                 </div>
 
                 <div id="vc-steal-controls" style="display:none;" class="w-100 text-center">
-                    <div class="alert alert-danger mb-2">Người chơi chính đã sai! Mời chọn người cướp lượt:</div>
                     <div id="vc-steal-buttons" class="btn-group shadow">
                     </div>
-                    <button class="btn btn-dark ms-2" onclick="GameLogic.closeVCQuestion()">🚫 Bỏ qua câu này</button>
                 </div>
 
                 <button id="btn-close-vc" class="btn btn-light fw-bold px-5" style="display:none;" onclick="GameLogic.closeVCQuestion()">ĐÓNG & CẬP NHẬT ĐIỂM</button>
@@ -460,6 +459,40 @@
 
     <div class="mt-5 text-center">
         <button class="btn btn-primary btn-lg px-5 mx-2">🔄 CHƠI LẠI TỪ ĐẦU</button>
+    </div>
+</div>
+
+
+<div class="modal fade" id="modalNotify" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-warning shadow-lg">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-warning fw-bold">📢 THÔNG BÁO</h5>
+            </div>
+            <div class="modal-body fs-5 text-center py-4" id="notify-content">
+                Nội dung thông báo...
+            </div>
+            <div class="modal-footer border-secondary justify-content-center">
+                <button type="button" class="btn btn-warning fw-bold px-4" id="btn-confirm-notify">ĐÃ HIỂU</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalConfirm" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-info shadow-lg">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-info fw-bold">❓ XÁC NHẬN</h5>
+            </div>
+            <div class="modal-body fs-5 text-center py-4" id="confirm-content">
+                Bạn có chắc chắn không?
+            </div>
+            <div class="modal-footer border-secondary justify-content-center">
+                <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">HỦY BỎ</button>
+                <button type="button" class="btn btn-primary fw-bold px-4" id="btn-yes-confirm">ĐỒNG Ý</button>
+            </div>
+        </div>
     </div>
 </div>
 
