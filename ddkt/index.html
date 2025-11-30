@@ -1,0 +1,1759 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>🐥 Đua Vịt Mượt Mà 🏁</title>
+<style>
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: url("songnuoc.gif") no-repeat center center;
+  background-size: cover;
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+  
+  
+}
+h1 { color: white; text-shadow:2px 2px 5px #000; margin-top:10px; }
+
+#controls { 
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  margin:0px;
+  z-index: 900;
+}
+
+
+
+#pond-container {
+  overflow:hidden;
+  width:100vw;
+  height:100vh;
+  border-top:6px solid white;
+  border-bottom:6px solid #004080;
+  position:relative;
+}
+
+
+
+#pond {
+  position: absolute;
+  top: 200px; /* nằm dưới bờ trên */
+  left: 0;
+  width: 13000px;
+  height: calc(100% - 200px); /* phần nước còn lại */
+  transition: transform 0.1s linear;
+	  z-index: 11; /* ← thêm dòng này */
+}
+
+.duck { position:absolute; left:0; width:170px; height:170px }
+.duck img { width:170px; height:170px; transform: scaleX(1)}
+.name { 
+	color:black; font-weight:bold; 
+	font-size:14px; position:absolute; 
+	top:-3px; 
+	left:0px; 
+	transform:translateX(-50%); }
+
+#countdown { font-size:160px; color:white; text-shadow:2px 2px 5px black; position:absolute; top:50%; width:100%; display:none; z-index:4; }
+#raceTimer { position: fixed; top:210px; right:10px; font-size:60px; color:black; text-shadow:1px 1px 3px black; z-index:5; 
+	background: url("thoigian.png") no-repeat; background-size: 100% 100%;
+	padding: 16px;;}
+#result {
+  position: absolute;         /* để transform translate(-50%, -50%) hoạt động */
+  bottom: 10px;                   /* canh giữa theo chiều dọc */
+  left: 50%;                  /* canh giữa theo chiều ngang */
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  color: black;
+  text-shadow: 1px 1px 3px black;
+  margin-top: 10px;           /* có thể bỏ nếu dùng transform đã canh giữa */
+  z-index: 12;                /* nổi trên các phần tử khác */
+  text-align: center;          /* căn giữa nội dung text */
+  pointer-events: none;        /* tránh che mất click nếu cần */
+	background: gold;
+  background: url("bangten.png") no-repeat;
+	background-size: 100% 100%;
+	padding-top: 6px;
+	padding-bottom: 6px;
+	padding-left: 16px;
+	padding-right: 16px;
+  max-width: 80vw;
+}
+
+.bubble { position:absolute; width:10px; height:10px; background:rgba(255,255,255,0.7); border-radius:50%; animation:bubbleUp 2s linear forwards; z-index:1; }
+.splash { position:absolute; width:15px; height:15px; border-radius:50%; background:rgba(255,255,255,0.8); animation:splashUp 0.6s ease-out forwards; }
+.confetti { position:absolute; width:8px; height:8px; border-radius:2px; animation:confettiFall 1s linear forwards; }
+.water-ring { position: absolute; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.6); border-radius: 50%; opacity: 1; animation: ringExpand 1.5s ease-out forwards; pointer-events: none; z-index: 1; }
+
+@keyframes bubbleUp { 0% { transform:translateY(0); opacity:1; } 100% { transform:translateY(-80px); opacity:0; } }
+@keyframes splashUp { 0%{ transform:scale(1) translateY(0); opacity:1; } 100%{ transform:scale(2) translateY(-40px); opacity:0; } }
+@keyframes confettiFall { 0%{ opacity:1; transform:translateY(0) rotate(0deg);} 100%{opacity:0; transform:translateY(-80px) rotate(360deg);} }
+@keyframes ringExpand { 0% { transform: scale(1); opacity: 0.9; } 100% { transform: scale(6); opacity: 0; } }
+
+.winner-glow { box-shadow: 0 0 30px 10px gold; border-radius: 50%; animation: glowRotate 2s linear infinite; }
+
+/* BỜ TRÊN */
+#bank {
+  position: absolute;
+  top: 0;
+  left: -1000px;
+  width: 13000px;
+  height: 180px; /* Chiều cao bờ */
+   background: url("boco.jpg") repeat-x center bottom;
+  z-index: 5;
+}
+
+/* CÂY */
+.tree {
+  position: absolute;
+  bottom: 0; /* gốc cây chạm mặt bờ */
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: contain;
+  pointer-events: none;
+  z-index: 6;
+}
+.start-line {
+  position: absolute;
+  top: 180px;            /* vị trí bắt đầu từ mép trên */
+  width: 100px;           /* độ rộng vạch */
+	left: 100px;
+  height: calc(100% - 180px); /* chạy dọc phần sông */
+  background: url("vachxuatphat.jpg") repeat-y center top;
+  z-index: 1;
+}
+.bo {
+  position: absolute;
+  top: 160px;            /* vị trí bắt đầu từ mép trên */
+  left: -1000px;           /* cách bờ trái 100px */
+  width: 13000px;           /* độ rộng vạch */
+  height: 50px; /* chạy dọc phần sông */
+  background: url("bo.png") repeat-x center bottom;
+  z-index: 8;
+}
+.xuatphat {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 600px; /* kích thước ảnh PNG */
+  height: 400px;
+  background: url("xuatphat.png") no-repeat center center;
+  background-size: contain;
+  transform: translate(-50%, -50%); /* căn giữa tuyệt đối */
+  z-index: 10; /* nằm trên cùng */
+  transition: opacity 0.8s ease-out;
+}
+.vedich {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 600px; /* kích thước ảnh PNG */
+  height: 400px;
+  background: url("vedich.png") no-repeat center center;
+  background-size: contain;
+  transform: translate(-50%, -50%); /* căn giữa tuyệt đối */
+  z-index: 10; /* nằm trên cùng */
+  transition: opacity 0.8s ease-out;
+}
+	
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+}	
+	
+
+	
+
+
+.menu-container {
+  
+  transform: translate(-50%, -50%);  /* đưa ra chính giữa màn hình */	
+  background: url("menu1.png") no-repeat;	
+  width: 1200px;
+  padding-bottom: 65px;
+   padding-left: 65px;
+	padding-right: 65px;
+  background-size: 100% 100%;
+	 flex-direction: row; /* Hai cột ngang */	
+  display: flex;
+  max-height: 90vh;	
+ transform: scale(0.9);
+  transition: transform 0.3s ease;	
+  z-index: 1000;
+}
+.winner-menu {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;	
+}
+
+.winner-menu.show {
+  opacity: 1;
+  pointer-events: all;
+}
+.winner-menu.show .menu-container {
+  transform: scale(1);
+}
+
+.close-btn {
+  margin-top: 10px;
+  background: #ff4d4d;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.clear-btn {
+  background: #ff9800;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-right: 8px;
+}
+	.buton_dk{
+		position: fixed;
+		bottom:10px;
+		right: 10px;
+	}
+#winnerList {
+  max-height: 300px; /* chiều cao tối đa */
+  overflow-y: auto;  /* cuộn dọc khi vượt quá */
+  padding-right: 5px; /* tránh bị che nội dung bởi scrollbar */
+}
+.danhsach h3, .setup h3 {
+  margin-top: 0;
+  border-bottom: 2px solid #0078ff;
+  padding-bottom: 6px;
+  color: #0078ff;
+  font-size: 20px;	
+}	
+	
+ .option {
+    font-size: 20px;
+    margin: 10px 0;
+	 text-align: left; /* 👈 Căn toàn bộ nhóm về bên trái */ 
+  }	
+	
+	input{
+		font-size: 20px !important;
+		 width: 20px;
+    height: 20px;
+    accent-color: #0078ff; /* Màu xanh cho radio */
+    cursor: pointer;
+	}	
+/* 🌟 Chia layout thành 2 cột */
+
+
+/* Mỗi cột chiếm 50% */
+.danhsach {
+  flex: 1;
+  
+  padding-top: 100px;
+   padding-left: 60px;
+	padding-right: 10px;
+	padding-bottom: 40px;
+	
+}
+ .setup {
+  flex: 1;
+  
+  padding-top: 90px;
+   padding-left: 10px;
+	padding-right: 50px;
+	padding-bottom: 40px;
+	
+}	
+
+/* Tiêu đề */
+.danhsach h3, .setup h3 {
+  margin-top: 0;
+  border-bottom: 2px solid #0078ff;
+  padding-bottom: 6px;
+  color: #0078ff;
+}
+
+/* Danh sách người thắng */
+#winnerList {
+  margin-top: 10px;
+  min-height: 100px;
+}
+
+/* Các option */
+.option {
+  margin: 8px 0;
+  font-size: 18px;
+}
+
+/* Nút */
+.clear-btn, .close-btn {
+  background: #0078ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  margin-right: 5px;
+  transition: 0.2s;
+}
+
+.clear-btn:hover, .close-btn:hover {
+  background: #005fcc;
+}
+.question-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+.qbox {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  max-width: 500px;
+  text-align: left;
+  color: black;
+}
+.qbox .highlight {
+  color: #0077ff;
+  font-weight: bold;
+}
+#questionArea h3{
+		font-size: 28px !important;
+	}
+#questionArea button{
+		font-size: 28px !important;
+	   border-radius: 6px;
+	}	
+	#questionArea{
+		
+		z-index: 900;
+	}		
+.traloicauhoi {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+	position: absolute;
+	top: 50%;
+	right: 10px;
+	z-index: 2000;
+}
+.traloicauhoi span{
+	color: aliceblue!important;
+	  
+}
+button#traloi {
+    padding: 20px 40px;
+    font-size: 24px;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+	    display: none; /* ẩn hoàn toàn khỏi màn hình */
+
+}
+button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.4);
+}
+#opcauhoi{
+		display: none;
+}
+	#questionCountdown{
+		font-size: 36px;
+		font-weight: bold;
+	}
+	
+.btn-overlay {
+  position: relative;
+  border: none;
+  padding: 0px !important;
+  background: none;
+  background-size: contain;	
+  cursor: pointer;
+}
+.btn-overlay img {
+  width: 160px;
+  height: 50px;	
+}
+.btn-overlay span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 18px;
+}
+.btn-overlay:hover span{
+ 
+  color: greenyellow;
+ 
+}
+button {padding:6px; font-size:18px; background:#ffdd00; border:none; cursor:pointer; transition:0.3s; }
+button:hover { background:#ffcc00; }
+	.setup{
+		 font-size: 20px;
+    margin: 10px 0;
+	 text-align: left; /* 👈 Căn toàn bộ nhóm về bên trái */ 
+	}	
+button {padding:6px; font-size:18px; background:#ffdd00; border:none; cursor:pointer; transition:0.3s; }
+button:hover { background:#ffcc00; border-radius: 10px;}	
+	.btn_boqua{
+		background-color: red;
+		color: white !important;
+	}
+
+	#closeMenu{
+		position: absolute;
+		top:80px;
+		right: 100px;
+	}
+	
+
+	
+.menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background:url(button_menu.png) no-repeat center;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding:6px;
+  background-size: 100% 100%;	
+  border-bottom-left-radius: 10px;
+  z-index: 100;
+  width: auto;              /* ✅ Co giãn tự động */
+  max-width: 100vw;         /* Không tràn màn hình */
+}
+
+#lopname {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+}
+	
+</style>
+</head>
+<body>
+
+<div id="controls">
+   <div id="raceTimer"></div>
+  <div class="buton_dk">	
+  <button id="setupBtn" class="btn-overlay"><img src="button-bg.png" alt=""><span>Tạo đội đua</span></button>
+  <button id="startBtn" class="btn-overlay" disabled><img src="button-bg.png" alt=""><span>Bắt đầu</span></button>
+</div>
+ <div class="menu">	
+  	<h2 id="lopname"></h2>  
+   <button id="menuBtn" class="menu-btn">🏅Menu</button>
+</div>
+<div id="winnerMenu" class="winner-menu hidden">
+  <div class="menu-container">
+    <!-- Cột 1: Danh sách -->
+    <div class="danhsach">	
+      <h3>🏆 Học sinh đã chiến thắng</h3>
+      <div id="winnerList"></div>
+	   <div id="soluonghs"></div>
+	   	
+	<div id="musicControl" style="
+  display: flex;
+  align-items: center;
+  gap: 10px;
+    padding: 6px;
+  border-radius: 10px;
+  width: fit-content;
+">
+  <button id="toggleMusic">🔊 Bật nhạc</button>
+  
+  <label style="display: flex; align-items: center; gap: 5px;">
+    Âm lượng:
+    <input type="range" id="volumeSlider"
+           min="0" max="1" step="0.01" value="0.5"
+           style="width: 200px;">
+  </label>
+</div>
+		
+	  <div style="margin-top:10px;">
+		<button id="resetGame" class="btn-overlay"><img src="button_tl.png" alt=""><span>🔄 Reset Game</span></button>  
+		<button id="closeMenu" class="btn-overlay"><img src="button_tl.png" alt=""><span>❌</span></button>    
+      </div>  	
+    </div>
+	
+
+    <!-- Cột 2: Cấu hình -->
+    <div class="setup">	
+      <h3>🎯 Cấu hình</h3>
+
+      <label style="display:block; margin-top:10px;">
+        <input type="checkbox" id="excludeWinners" checked> Gọi tên không lặp lại 
+      </label>
+
+      <label>
+        ⏱️ Thời gian đua:
+        <input type="number" id="thoigiandua" value="10" min="5" max="30" style="width:60px;"> giây
+      </label>
+	   <label style="display:block; margin-top:10px;">
+        <input type="checkbox" id="hoatanh"> Hoạt ảnh cao
+      </label>	
+
+      <h3 style="margin-top:15px;">🎯 Chọn loại cuộc đua:</h3>
+      
+      <div class="option">
+        <label><input type="radio" name="race" value="duck" checked> 🦆 Đua vịt</label>
+      </div>
+	  <div class="option">
+        <label><input type="radio" name="race" value="boat"> 🚣‍♂️ Đua thuyền</label>
+      </div>	
+	  <div class="option">
+        <label><input type="radio" name="race" value="bird" > 🦆 Đua chim cánh cụt</label>
+      </div>
+	  <div class="option">
+        <label><input type="radio" name="race" value="dongvat" > 🦆 Đua động vật</label>
+      </div>
+        <h3>🧠 Câu hỏi sau khi thắng</h3>
+        <label><input type="checkbox" id="hstraloicauhoi">Cho học sinh trả lời câu hỏi</label><br>
+        <div id="opcauhoi">
+            <label id="dangcauhoi"></label><br>
+            <label><input type="checkbox" id="chkLoai"> Loại học sinh nếu trả lời sai</label><br>
+            <label>Số câu hỏi được trả lời: <input type="number" id="numQ" value="3" min="1" max="20" style="width:50px"></label> <br>   <label><input type="checkbox" id="chtgtl"> Thời gian trả lời câu hỏi</label><br>
+            <label id="numbertgtlch" style="display:none;">Thời gian trả lời: <input type="number" id="thoigiantraloi" value="15" min="6" max="30" style="width:50px"></label>
+        </div>
+    </div>
+  </div>
+	
+</div>	
+	
+</div>
+	
+
+<div id="pond-container">
+<div id="vachxuatphat" class="xuatphat"></div>
+	
+<div id="bank"></div>
+<div id="bo" class="bo"></div>	
+<div id="startLine" class="start-line"></div>	
+	<div id="pond"></div>
+  <div id="countdown"></div>
+<div id="vachvedich" class="vedich"></div>		
+</div>
+<div class="traloicauhoi">
+	 <button id="traloi" class="btn-overlay" onclick="traloicauhois()"><img src="button_tl.png" alt=""><span>Trả lời câu hỏi</span></button>
+	</div>
+<div id="result"></div>
+	
+		
+	
+<audio id="winSound" src="win.mp3"></audio>
+<audio id="hover" src="hover.mp3"></audio>
+<audio id="click" src="bling.mp3"></audio>
+<audio id="dung" src="dung.mp3"></audio>
+<audio id="sai" src="sai.mp3"></audio>
+<audio id="nhacnen" src="nhacnen.mp3"></audio>
+	
+<script>	
+const pond = document.getElementById('pond');
+const setupBtn = document.getElementById('setupBtn');
+const startBtn = document.getElementById('startBtn');
+const countdown = document.getElementById('countdown');
+const result = document.getElementById('result');
+const winSound = document.getElementById('winSound');
+const hover = document.getElementById('hover');
+const click = document.getElementById('click');	
+const dung = document.getElementById('dung');		
+const sai = document.getElementById('sai');		
+const nhacnen = document.getElementById('nhacnen');		
+	
+let ducks = [], raceStarted=false, winner=null, readyToRun=false;
+let cameraX=0;
+const FPS = 60;
+let treesCreated = false;	
+const vedich = document.getElementById("vachvedich");
+ vedich.classList.add("hidden");	
+function lerp(a,b,t){return a+(b-a)*t;}
+
+// Canvas nước
+const canvas=document.createElement('canvas');
+pond.appendChild(canvas);
+const ctx=canvas.getContext('2d');
+canvas.style.position="absolute"; canvas.style.top=0; canvas.style.left=0; canvas.style.zIndex=0;canvas.style.pointerEvents = "none";
+
+//Doamm mpi
+const menuBtn = document.getElementById("menuBtn");
+const winnerMenu = document.getElementById("winnerMenu");
+const closeMenu = document.getElementById("closeMenu");
+const resetGame = document.getElementById("resetGame");
+const winnerList = document.getElementById("winnerList");
+const excludeCheckbox = document.getElementById("excludeWinners");	
+const hoatanh = document.getElementById("hoatanh");
+	
+let games="duavit";
+let trees = [];
+let hoas=[];
+let das=[];	
+let scores = {}; // Lưu điểm { "Tên": điểm }	
+const TREE_COUNT = 12;
+const HOA_COUNT =22;
+const DA_COUNT = 26;	
+const POND_LENGTH = 13000;
+const MAX_DISTANCE = 11000; // khoảng cách tối đa	
+let winners = [];
+let excludeWinnersNextRound = false;
+let  raceDuration = 5;
+let raceTimeLeft = raceDuration;
+let vit=true;
+let thuyen=false;	
+let bird =false;
+let dongvat =false;	
+// ⚙️ Cấu hình
+let traloicauhoi=false;	
+let questionType = "tuluan"; // "tuluan" hoặc "tracnghiem"
+let loaiKhiSai = false;
+let soCauToiDa = 3;	
+let amnhac=false;
+let isPlaying = false;	
+let questionPool=[];
+let questionbandau=[];
+let questions=[];	
+let lopname;	
+let students=[];
+let names=[];	
+let questionsTracNghiem =[];
+let questionsTuLuan=[];
+//Đếm ngươcj
+let questionTimer; // biến lưu interval
+let questionTimeLeft = 10; // 10 giây, có thể thay đổi
+	
+	
+// 🧠 --- TẢI DỮ LIỆU TỪ localStorage ---
+// Danh sách nhập từ textarea
+
+function playSound(sound,amnhac){ 
+  sound.currentTime = 0; 
+	if(amnhac==true)
+  sound.play(); 
+ 	
+}
+function stopSound(sound){ 
+  sound.pause(); 
+}
+	
+nhacnen.loop = true;
+nhacnen.volume = 0.5;
+
+const toggleMusicBtn = document.getElementById("toggleMusic");
+const volumeSlider = document.getElementById("volumeSlider");
+// 🎵 Bật/tắt nhạc
+toggleMusicBtn.addEventListener("click", () => {
+  if (isPlaying) {
+    nhacnen.pause();
+	amnhac=false;  
+    toggleMusicBtn.textContent = "🔊 Bật nhạc";
+  } else {
+    nhacnen.play();
+	amnhac=true;  
+    toggleMusicBtn.textContent = "⏸ Tạm dừng";
+  }
+  isPlaying = !isPlaying;
+});
+
+// 🎚 Chỉnh âm lượng
+volumeSlider.addEventListener("input", (e) => {
+  nhacnen.volume = e.target.value;
+});
+
+
+
+// 🧠 --- TẢI DỮ LIỆU TỪ localStorage ---
+const thoigianduaInput = document.getElementById("thoigiandua");
+function loadWinnersData() {
+  // Lấy danh sách người thắng
+const stored = localStorage.getItem("winners"+games+lopname);
+ if (stored) {
+    winners = JSON.parse(stored);
+  }
+ const storedScores = localStorage.getItem("scores" + games + lopname);
+if (storedScores) {
+  scores = JSON.parse(storedScores);
+} else {
+  scores = {};
+}
+  // Lấy trạng thái loại khỏi vòng sau
+  const exclude = localStorage.getItem("excludeWinnersNextRound"+games+lopname);
+  excludeWinnersNextRound = exclude === "true";
+
+  // Gán trạng thái cho checkbox nếu tồn tại
+  if (excludeCheckbox) {
+    excludeCheckbox.checked = excludeWinnersNextRound;
+
+    // 🔁 Khi người dùng tick / bỏ tick → lưu lại
+    excludeCheckbox.addEventListener("change", () => {
+      excludeWinnersNextRound = excludeCheckbox.checked;
+      localStorage.setItem(
+        "excludeWinnersNextRound"+games+lopname,
+        excludeWinnersNextRound
+      );
+    });
+  }
+
+  // Cập nhật danh sách hiển thị người thắng
+  updateWinnerList();
+}
+let hoatanhcao=false;	
+hoatanh.addEventListener("change", () => {
+      hoatanhcao = hoatanh.checked;
+    });	
+	
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+  
+// Lấy ngẫu nhiên câu hỏi và trộn opts
+function getRandomQuestions(count) {
+  if (questionPool.length < count) {
+    questionPool = [...allQuestions];
+  }
+
+  // Xáo trộn pool
+  shuffleArray(questionPool);
+
+  const selected = questionPool.slice(0, count);
+  questionPool.splice(0, count); // loại bỏ câu đã lấy
+
+  // Trộn opts và cập nhật answer cho từng câu
+  selected.forEach(q => {
+    const correctAnswer = q.opts[q.answer]; // lưu đáp án đúng
+    shuffleArray(q.opts);                   // trộn các lựa chọn
+    q.answer = q.opts.indexOf(correctAnswer); // cập nhật vị trí đáp án đúng
+  });
+
+  return selected;
+}
+
+
+const data = {
+    "tenlop": "Lớp 6E",
+    "students": ["Nguyễn Trường An", "Lê Nhật Anh", "Nguyễn Lê Hoài Anh", "Vũ Thiên Ân", "Nguyễn Băng Băng", "Vũ Quỳnh Chi", "Nguyễn Quỳnh Chi", "Nguyễn Nhân Chinh", "Nguyễn Trọng Đạt", "Nguyễn Duy Đông", "Nguyễn Minh Đức", "Lê Tiến Dũng", "Trần Thị Thu Hà", "Đặng An Khang", "Vũ Tử Khánh", "Bùi Đình Tùng Lâm", "Trần Bảo Lâm", "Nguyễn Khánh Linh", "Nguyễn Vũ Minh", "Nguyễn Tuệ Minh", "Vũ Duy Nam", "Ng. Thị Kim Ngân", "Hoàng Trọng Nghĩa", "Nguyễn Thị Thảo Nguyên", "Nguyễn Tuệ Nhi", "Nguyễn Quỳnh Phương", "Nguyễn Như Quỳnh", "Vương Băng Tâm", "Nguyễn Minh Tùng", "Nguyễn Thảo Vân", "Nguyễn Nhật Vy", "Trần Hà Vy"],
+    "questions": [
+        { "q": "Từ nào sau đây là từ láy hoàn toàn?", "opts": ["Xanh xao", "Xinh xắn", "Mặt mũi", "Thăm thẳm"], "answer": 3 },
+        { "q": "Trong câu 'Em làm bài tập về nhà.', bộ phận nào là chủ ngữ?", "opts": ["Em", "làm bài tập", "về nhà", "bài tập"], "answer": 0 },
+        { "q": "Biện pháp tu từ nào được sử dụng trong câu 'Mặt trời là lòng đỏ quả trứng khổng lồ'?", "opts": ["So sánh", "Nhân hóa", "Ẩn dụ", "Hoán dụ"], "answer": 0 },
+        { "q": "Từ nào là tính từ chỉ tính cách?", "opts": ["Cái bàn", "Vui vẻ", "Nhảy", "Cao"], "answer": 1 },
+        { "q": "Thành phần nào trả lời cho câu hỏi 'Khi nào?' trong câu 'Hôm qua, em được điểm 10.'", "opts": ["Em", "được điểm 10", "Hôm qua", "điểm 10"], "answer": 2 },
+        { "q": "Từ nào là từ láy bộ phận?", "opts": ["Lặng lẽ", "Xinh xắn", "Chăm chỉ", "Lung linh"], "answer": 1 },
+        { "q": "Từ nào là đại từ nhân xưng ngôi thứ nhất (số ít)?", "opts": ["Bạn", "Họ", "Tôi", "Các bạn"], "answer": 2 },
+        { "q": "Biện pháp tu từ nào được sử dụng trong câu 'Những ngôi sao thức ngoài kia'?", "opts": ["So sánh", "Nhân hóa", "Ẩn dụ", "Hoán dụ"], "answer": 1 },
+        { "q": "Từ nào là từ chỉ đặc điểm của sự vật?", "opts": ["Ngôi nhà", "Chạy nhảy", "Xanh biếc","Ăn uống"], "answer": 2 },
+        { "q": "Trong câu 'Chú bộ đội dũng cảm bảo vệ Tổ quốc.', từ nào là danh từ chỉ người?", "opts": ["dũng cảm", "bảo vệ", "Chú bộ đội", "Tổ quốc"], "answer": 2 }
+    ],
+    "type": "questions"
+};
+
+// Nếu có tenlop + students
+if (data.tenlop) {
+     lopname = data.tenlop || "";
+     students = data.students || [];
+     names=[...students];
+    document.getElementById("lopname").innerText = "Lớp: "+lopname.toUpperCase();
+}
+
+// Nếu có câu hỏi
+if (data.type === "questions" && data.questions) {
+
+    questionPool = data.questions || [];
+    const str = JSON.stringify(questionPool[0]);
+    questionbandau=[...questionPool];
+    if(str.includes("opts") && str.includes("answer")){
+        questionsTracNghiem= getRandomQuestions();
+        questionType="Trắc nghiệm";
+        document.getElementById("dangcauhoi").innerText="❓ Dạng câu hỏi trắc nghiệm";
+    }else{
+        questionType="tuluan";
+        document.getElementById("dangcauhoi").innerText="❓ Dạng câu hỏi tự luận";
+        questionsTuLuan=[...questionPool];
+        shuffleArray(questionsTuLuan);
+
+    }
+    //questions=[...allQuestions];
+}
+loadWinnersData();
+// 🔄 Gọi sau khi trang tải xong
+//window.addEventListener("DOMContentLoaded", loadWinnersData());
+
+// 💾 --- LƯU DỮ LIỆU VÀO localStorage ---
+function saveWinnersData() {
+  localStorage.setItem("winners"+games+lopname, JSON.stringify(winners));
+  localStorage.setItem("excludeWinnersNextRound"+games+lopname, excludeWinnersNextRound);
+  localStorage.setItem("scores" + games + lopname, JSON.stringify(scores));	
+}
+
+ const radios = document.querySelectorAll('input[name="race"]');
+
+    // Lắng nghe sự kiện thay đổi (change)
+    radios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          if (e.target.value === "boat") {
+			  thuyen=true;
+			  vit=false;
+			  bird=false;
+			  dongvat=false;
+          } 
+		if (e.target.value === "duck") {
+			  thuyen=false;
+			  vit=true;
+			bird=false;
+			dongvat=false;
+          }
+		if (e.target.value === "bird") {
+			  thuyen=false;
+			  vit=false;
+			  bird=true;
+			dongvat=false;
+          }
+		if (e.target.value === "dongvat") {
+			  dongvat=true;
+			  thuyen=false;
+			  vit=false;
+			  bird=false;
+          }	
+        }
+      });
+    });	
+// Mở / đóng menu
+menuBtn.onclick = () => {
+  winnerMenu.classList.toggle("show");
+};
+closeMenu.onclick = () => {
+  winnerMenu.classList.remove("show");
+};
+winnerMenu.addEventListener("click", (e) => {
+  if (e.target === winnerMenu) {
+    winnerMenu.classList.remove("show");
+  }
+});	
+
+// Khi tick checkbox -> cập nhật trạng thái loại & lưu
+excludeCheckbox.onchange = (e) => {
+  excludeWinnersNextRound = e.target.checked;
+  saveWinnersData();
+};
+
+// Khi có người thắng -> thêm vào danh sách
+function addWinner(name) {
+  if (!scores[name]) scores[name] = 0;
+  scores[name] += 0; // ✅ Mỗi lần thắng +10 điểm	
+  if (!winners.includes(name)) {
+    winners.push(name);
+    updateWinnerList();
+    saveWinnersData();
+  }
+}
+
+// Cập nhật danh sách hiển thị
+function updateWinnerList() {
+  winnerList.innerHTML = "";
+  if (winners.length === 0) {
+    winnerList.innerHTML = "<p>Chưa có ai thắng 🐥</p>";
+    return;
+  }
+
+  // Sắp xếp theo điểm cao nhất
+  const sorted = [...winners].sort((a, b) => (scores[b] || 0) - (scores[a] || 0));
+
+  sorted.forEach((name, index) => {
+    const div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.justifyContent = "space-between";
+    div.style.alignItems = "center";
+    div.style.marginBottom = "4px";
+    div.style.padding = "4px 6px";
+    div.style.borderBottom = "1px dashed #ccc";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.textContent = `${index + 1}. 🏅 ${name} — ${scores[name] || 0} điểm`;
+
+    const removeBtn = document.createElement("button");
+    removeBtn.textContent = "❌";
+    removeBtn.style.background = "#ff4d4d";
+    removeBtn.style.border = "none";
+    removeBtn.style.color = "white";
+    removeBtn.style.borderRadius = "6px";
+    removeBtn.style.cursor = "pointer";
+    removeBtn.style.padding = "2px 6px";
+    removeBtn.onclick = () => {
+      winners.splice(winners.indexOf(name), 1);
+      delete scores[name];
+      saveWinnersData();
+      updateWinnerList();
+	  const slhs = document.getElementById("soluonghs");
+	const temp= students.length- winners.length;
+    slhs.textContent="Số lượng học sinh: "+ temp+"/"+students.length; 	
+    };
+
+    div.appendChild(nameSpan);
+    div.appendChild(removeBtn);
+    winnerList.appendChild(div);
+  });
+}
+
+
+
+
+///////	
+// 🔄 RESET GAME TOÀN BỘ
+resetGame.onclick = () => {
+  if (confirm("Bạn có chắc muốn reset toàn bộ game về ban đầu không?")) {
+    // Xóa danh sách thắng
+    winners = [];
+	names = [...students];  
+	cauHienTai = 0;
+    cauhoiketiep = 0;  
+	 const slhs = document.getElementById("soluonghs");
+    slhs.textContent="Số lượng học sinh: "+ students.length+"/"+students.length; 	  
+    localStorage.removeItem("winners"+ games + lopname);
+    localStorage.removeItem("excludeWinnersNextRound"+ games + lopname);
+	scores = {};
+    localStorage.removeItem("scores" + games + lopname);  
+    excludeWinnersNextRound = false;
+    excludeCheckbox.checked = true;
+    updateWinnerList();
+	            
+	
+	if(questionType=="tuluan"){
+	    questionsTuLuan=[...questionbandau];
+		shuffleArray(questionsTuLuan);
+	}else{
+		questionPool=[...questionbandau];
+		questionsTracNghiem= getRandomQuestions();
+	}				
+
+    // Xóa toàn bộ vịt, cây, hoa, đá
+    pond.querySelectorAll('.duck').forEach(e => e.remove());
+    pond.querySelectorAll('.tree').forEach(e => e.remove());
+    pond.querySelectorAll('.hoa').forEach(e => e.remove());
+    pond.querySelectorAll('.da').forEach(e => e.remove());
+
+    // Ẩn vạch đích, reset vạch xuất phát
+    vedich.classList.add("hidden");
+    const xuatphat = document.getElementById("vachxuatphat");
+    xuatphat.classList.remove("hidden");
+    startLine.style.transform = "translateX(0px)";
+
+    // Reset biến game
+    raceStarted = false;
+    readyToRun = false;
+    winner = null;
+    raceTimeLeft = raceDuration;
+    cameraX = 0;
+    pond.style.transform = `translateX(0px)`;
+    result.textContent = '';
+    countdown.style.display = 'none';
+
+    // Sinh lại cây, hoa, đá mặc định
+    spawnInitialTrees();
+    spawnInitialhoa();
+    spawnInitialda();
+
+    alert("Game đã được reset về trạng thái ban đầu ✅");
+  }
+};
+
+	
+	
+
+function resizeCanvas(){
+  canvas.width = pond.clientWidth;
+  canvas.height = pond.clientHeight;
+}
+window.addEventListener('resize',resizeCanvas); resizeCanvas();
+
+let waveOffset=0;
+function drawWater(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const grad=ctx.createLinearGradient(0,0,0,canvas.height);
+  grad.addColorStop(0,'#5dade2'); grad.addColorStop(1,'#2874a6');
+  ctx.fillStyle=grad; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.beginPath();
+  ctx.moveTo(0,canvas.height/2);
+  for(let x=0;x<canvas.width;x++){
+    const y=Math.sin((x+waveOffset)*0.02)*5+canvas.height/2;
+    ctx.lineTo(x,y);
+  }
+  ctx.lineTo(canvas.width,canvas.height);
+  ctx.lineTo(0,canvas.height);
+  ctx.closePath();
+  ctx.fillStyle='rgba(255,255,255,0.1)'; ctx.fill();
+  waveOffset+=2;
+  requestAnimationFrame(drawWater);
+}
+//drawWater();
+
+
+const treeImgs = [];
+for (let i = 1; i <= 12; i++) {
+	if(i<10){
+  treeImgs.push(`cay/cay_0${i}.png`);
+	}else{
+		 treeImgs.push(`cay/cay_${i}.png`);
+	}
+}
+const hoaImgs = [];
+for (let i = 1; i <= 22; i++) {
+  if(i<10){
+  hoaImgs.push(`hoa/hoala_0${i}.png`);
+	}else{
+		 hoaImgs.push(`hoa/hoala_${i}.png`);
+	}
+}
+const daImgs = [];
+for (let i = 1; i <= 26; i++) {
+ if(i<10){
+  daImgs.push(`da/da_0${i}.png`);
+	}else{
+		 daImgs.push(`da/da_${i}.png`);
+	}
+}	
+
+
+function spawnInitialTrees() {
+   if (treesCreated) return;
+  treesCreated = true;	
+  trees.forEach(t => t.remove());
+  trees = [];
+
+  const bank = document.getElementById("bank"); // bờ
+  for (let i = 0; i < TREE_COUNT; i++) {
+    const tree = document.createElement("div");
+    tree.className = "tree";
+
+    const x = Math.random() * POND_LENGTH;
+    const h = 120 + Math.random() * 70;
+
+    tree.style.left = x + "px";
+    tree.dataset.baseX = x;
+    tree.style.height = h + "px";
+    tree.style.width = h * 0.8 + "px";
+    tree.style.bottom = "0px"; // gốc chạm bờ
+    tree.style.background = `url("${treeImgs[Math.floor(Math.random() * treeImgs.length)]}") no-repeat center / contain`;
+
+    bank.appendChild(tree);
+    trees.push(tree);
+  }
+  console.log("🌳 Khởi tạo cây trên bờ:", trees.length);
+}
+function spawnInitialhoa() {
+  hoas.forEach(t => t.remove());
+  hoas = [];
+
+  const bank = document.getElementById("bank"); // bờ
+  for (let i = 0; i < HOA_COUNT; i++) {
+    const hoa = document.createElement("div");
+    hoa.className = "tree";
+
+    const x = Math.random() * POND_LENGTH;
+    const h = 120 + Math.random() * 70;
+
+    hoa.style.left = x + "px";
+    hoa.dataset.baseX = x;
+    hoa.style.height = h + "px";
+    hoa.style.width = h * 0.8 + "px";
+    hoa.style.bottom = "0px"; // gốc chạm bờ
+    hoa.style.background = `url("${hoaImgs[Math.floor(Math.random() * hoaImgs.length)]}") no-repeat center / contain`;
+
+    bank.appendChild(hoa);
+    hoas.push(hoa);
+  }
+}
+function spawnInitialda() {
+  das.forEach(t => t.remove());
+  das = [];
+
+  const bank = document.getElementById("bank"); // bờ
+  for (let i = 0; i < DA_COUNT; i++) {
+    const da = document.createElement("div");
+    da.className = "tree";
+
+    const x = Math.random() * POND_LENGTH;
+    const h = 120 + Math.random() * 70;
+
+    da.style.left = x + "px";
+    da.dataset.baseX = x;
+    da.style.height = h + "px";
+    da.style.width = h * 0.8 + "px";
+    da.style.bottom = "0px"; // gốc chạm bờ
+    da.style.background = `url("${daImgs[Math.floor(Math.random() * daImgs.length)]}") no-repeat center / contain`;
+
+    bank.appendChild(da);
+    das.push(da);
+  }
+}	
+
+window.addEventListener('DOMContentLoaded', () => {
+  nhacnen.play();	
+  // Nếu bạn đã append canvas vào #pond trước, hãy đảm bảo canvas không chặn hiển thị:
+  const canvas = document.querySelector('#pond canvas');
+  if (canvas) {
+    canvas.style.pointerEvents = "none";
+    canvas.style.zIndex = "0";
+  }
+  const buttonhover = document.querySelectorAll("button"); // Lấy tất cả nút trên trang
+  
+  buttonhover.forEach(btn => {
+    // Khi chuột di vào
+	  /*
+    btn.addEventListener("mouseenter", () => {
+      playSound(hover, false); // Gọi hàm phát âm thanh
+    });*/
+	// Khi bấm nút
+	  
+    btn.addEventListener("click", () => {
+      playSound(click, amnhac); // âm thanh khi click (ví dụ: clickSound)
+    }); 
+  }); 
+	
+  if (!treesCreated) {
+    spawnInitialTrees();
+    spawnInitialhoa();
+    spawnInitialda();
+  }
+	
+
+});
+// Gọi spawn khi load
+//spawnInitialTrees();
+
+
+
+// Hàm di chuyển cây theo camera (parallax)
+function updateTrees(cameraX) {
+  const parallaxSpeed = 0.5;
+  trees.forEach(tree => {
+    let baseX = parseFloat(tree.dataset.baseX);
+    let screenX = baseX - cameraX * parallaxSpeed;
+    tree.style.left = screenX + "px";
+
+    if (screenX < -150) {
+      baseX += POND_LENGTH;
+      tree.dataset.baseX = baseX;
+    }
+  });
+  hoas.forEach(hoa => {
+    let baseX = parseFloat(hoa.dataset.baseX);
+    let screenX = baseX - cameraX * parallaxSpeed;
+    hoa.style.left = screenX + "px";
+
+    if (screenX < -150) {
+      baseX += POND_LENGTH;
+      hoa.dataset.baseX = baseX;
+    }
+  });	
+  das.forEach(da => {
+    let baseX = parseFloat(da.dataset.baseX);
+    let screenX = baseX - cameraX * parallaxSpeed;
+    da.style.left = screenX + "px";
+
+    if (screenX < -150) {
+      baseX += POND_LENGTH;
+      da.dataset.baseX = baseX;
+    }
+  });	
+}
+	
+// Trả về dạng rút gọn: "N T Anh" từ "Nguyen Thi Anh"
+function shortenName(fullName) {
+  if (!fullName || typeof fullName !== 'string') return '';
+
+  // 1. Xóa khoảng trắng đầu/cuối và nhiều khoảng trắng giữa
+  const parts = fullName.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '';
+
+  // 2. Nếu chỉ 1 phần thì trả về chính nó (chữ hoa đầu)
+  if (parts.length === 1) return capitalize(parts[0]);
+
+  // 3. Lấy initial cho tất cả phần trừ phần cuối
+  const initials = parts.slice(0, -1).map(p => p[0].toUpperCase());
+
+  // 4. Phần cuối giữ nguyên nhưng chuẩn hóa hoa thường (viết hoa chữ đầu)
+  const last = capitalize(parts[parts.length - 1]);
+
+  // 5. Nối: "N T Anh"
+  return initials.join(' ') + ' ' + last;
+}
+
+// Helper: viết hoa chữ cái đầu, phần còn lại viết thường
+function capitalize(s) {
+  if (!s) return '';
+  return s[0].toUpperCase() + s.slice(1).toLowerCase();
+}
+// Thêm vào animateRace
+
+	
+
+function updateRaceTimer(){ document.getElementById('raceTimer').textContent=`⏱ ${Math.ceil(raceTimeLeft)}s`; }
+
+// Khi bấm setup vịt, **không xóa cây**
+setupBtn.onclick = () => {
+  raceStarted = false;
+  readyToRun = false;
+  winner = null;
+  resetQuestion();	
+  document.getElementById("traloi").style.display = "none";
+  cameraX = 0;
+  pond.style.transform = `translateX(0px)`;
+  result.textContent = '';
+  const thoigiandua = parseInt(thoigianduaInput.value) || 10; // chuyển sang số, mặc định 20		
+  countdown.style.display = 'none';
+  raceDuration = thoigiandua;
+  raceTimeLeft = raceDuration;	
+  // Chỉ xóa vịt cũ, giữ cây, hoa, đá
+  pond.querySelectorAll('.duck').forEach(d => d.remove());
+
+  startLine.style.transform = "translateX(0px)";
+  document.getElementById("vachxuatphat").classList.remove("hidden");
+  vedich.classList.add("hidden");
+
+ const exclude = document.getElementById('excludeWinners').checked;
+const winners = JSON.parse(localStorage.getItem('winners'+games+lopname) || '[]');
+
+	
+	 const slhs = document.getElementById("soluonghs");
+	const temp= students.length- winners.length;
+    slhs.textContent="Số lượng học sinh: "+ temp+"/"+students.length; 	
+    // Xóa toàn bộ vịt, cây, hoa, đá
+    pond.querySelectorAll('.duck').forEach(e => e.remove());
+    pond.querySelectorAll('.tree').forEach(e => e.remove());
+    pond.querySelectorAll('.hoa').forEach(e => e.remove());
+    pond.querySelectorAll('.da').forEach(e => e.remove());
+
+    spawnInitialTrees();
+    spawnInitialhoa();
+    spawnInitialda();
+   startBtn.disabled=false;
+// Nếu bật chế độ "bỏ người thắng"
+if (exclude) {
+  names = names.filter(n => !winners.includes(n));
+}
+
+if (names.length === 0) {
+  alert("Không còn học sinh nào để đua!");
+  return;
+}
+    
+  ducks = [];
+  const pondHeight = pond.clientHeight;
+  const bottomOffset = 180;
+  const spacing = (pondHeight - bottomOffset) / (names.length + 1);
+if(vit==true){
+  if(!hoatanhcao){	
+    document.body.style.background = 'url("songnuoc.gif") no-repeat center center';
+document.body.style.backgroundSize = 'cover';
+  }else{	
+    document.body.style.background = 'url("songnuoc.gif") repeat-x center bottom';
+    document.body.style.backgroundSize = 'cover';	
+  }
+  names.forEach((name, i) => {
+	namerutgon=  shortenName(name);  
+    const duck = document.createElement('div');
+    duck.className = 'duck';
+    duck.style.top = `${spacing * (i + 1)}px`;
+    duck.innerHTML = `<img src="vit/vit (${(i % 60) + 1}).png"><div class="name">${namerutgon}</div>`;
+    pond.appendChild(duck);
+
+    ducks.push({
+      element: duck,
+      name,
+      x: 0,
+      yOffset: Math.random() * 10,
+      baseSpeed: 2 + Math.random() * 1,
+      boosting: false,
+      active: true
+    });
+  });
+}
+if(thuyen==true){
+ if(!hoatanhcao){	
+ document.body.style.background = 'url("songnuoc.gif") no-repeat center center';
+document.body.style.backgroundSize = 'cover';
+ }else{
+document.body.style.background = 'url("songnuoc.gif") repeat-x center bottom';
+document.body.style.backgroundSize = 'cover';
+ }
+  names.forEach((name, i) => {
+    const duck = document.createElement('div');
+    duck.className = 'duck';
+    duck.style.top = `${spacing * (i + 1)}px`;
+	namerutgon=  shortenName(name);
+	if(i<12){  
+    duck.innerHTML = `<img src="thuyen/thuyen (${(i % 60) + 1}).gif"><div class="name">${namerutgon}</div>`;
+    pond.appendChild(duck);
+	}
+	 if(i>=12){
+	  let randomNumber = Math.floor(Math.random() * 12) + 1;	 
+	  duck.innerHTML = `<img src="thuyen/thuyen (${randomNumber}).gif"><div class="name">${namerutgon}</div>`;
+    pond.appendChild(duck); 
+} 
+
+    ducks.push({
+      element: duck,
+      name,
+      x: 0,
+      yOffset: Math.random() * 10,
+      baseSpeed: 2 + Math.random() * 1,
+      boosting: false,
+      active: true
+    });
+  });	
+}
+  
+if(bird==true){	
+	 if(!hoatanhcao){
+	document.body.style.background = 'url("sanbang.jpg") no-repeat center center';
+document.body.style.backgroundSize = 'cover';
+	 }else{
+		document.body.style.background = 'url("sanbang.jpg") repeat-x center bottom';
+document.body.style.backgroundSize = 'cover';
+	 }
+  names.forEach((name, i) => {
+    const duck = document.createElement('div');
+    duck.className = 'duck';
+    duck.style.top = `${spacing * (i + 1)}px`;
+	namerutgon=  shortenName(name);
+	if(i<25){  
+    duck.innerHTML = `<img src="chim/chimthuan (${(i) + 1}).gif"><div class="name">${namerutgon}</div>`;
+	
+    pond.appendChild(duck);
+	}
+	if(25<=i&&i<=36){  
+      duck.innerHTML = `<img src="chim/chimnguoc (${(i) - 24}).gif" style="transform: scaleX(-1);"><div class="name">${namerutgon}</div>`;
+    pond.appendChild(duck);
+	}   
+	 if(i>=37){
+	  let randomNumber = Math.floor(Math.random() * 25) + 1;	 
+	  duck.innerHTML = `<img src="chim/chimthuan (${randomNumber}).gif"><div class="name">${namerutgon}</div>`; 
+    pond.appendChild(duck);	 
+} 
+
+    ducks.push({
+      element: duck,
+      name,
+      x: 0,
+      yOffset: Math.random() * 10,
+      baseSpeed: 2 + Math.random() * 1,
+      boosting: false,
+      active: true
+    });
+  });	
+}
+  
+if(dongvat==true){
+ if(!hoatanhcao){	
+  document.body.style.background = 'url("duongduaco.jpg") no-repeat center center';
+document.body.style.backgroundSize = 'cover';
+ }else{	
+	document.body.style.background = 'url("duongduaco.jpg") repeat-x center bottom';
+  document.body.style.backgroundSize = 'cover';
+ }
+  
+  names.forEach((name, i) => {
+    const duck = document.createElement('div');
+    duck.className = 'duck';
+    duck.style.top = `${spacing * (i + 1)}px`;
+	namerutgon=  shortenName(name);
+	if(i<19){  
+    duck.innerHTML = `<img src="dongvat/dongvat (${(i) + 1}).gif"><div class="name">${namerutgon}</div>`;
+	
+    pond.appendChild(duck);
+	}
+	if(19<i&&i<=22){  
+      duck.innerHTML = `<img src="dongvat/dongvat (${(i)}).gif" style="transform: scaleX(-1);"><div class="name">${namerutgon}</div>`;
+    pond.appendChild(duck);
+	}   
+	 if(i>22){
+	  let randomNumber = Math.floor(Math.random() * 17) + 1;	 
+	  duck.innerHTML = `<img src="dongvat/dongvat (${randomNumber}).gif"><div class="name">${namerutgon}</div>`;
+    pond.appendChild(duck);	 
+} 
+
+    ducks.push({
+      element: duck,
+      name,
+      x: 0,
+      yOffset: Math.random() * 10,
+      baseSpeed: 2 + Math.random() * 1,
+      boosting: false,
+      active: true
+    });
+  });	
+};
+  startBtn.disabled = false;
+};
+		
+
+
+startBtn.onclick = async () => {
+  if (ducks.length === 0) return;
+
+
+  result.textContent = '';
+  startBtn.disabled = true;
+  setupBtn.disabled = true;
+  countdown.style.display = "block";
+
+  for (let i = 3; i > 0; i--) {
+    countdown.textContent = i;
+    await new Promise(r => setTimeout(r, 1000));
+  }
+
+  countdown.textContent = "GO!";
+  await new Promise(r => setTimeout(r, 700));
+  countdown.style.display = "none";
+
+  const xuatphat = document.getElementById("vachxuatphat");
+  xuatphat.classList.add("hidden");
+
+  readyToRun = true;
+  raceStarted = true;
+  animateRace();
+};
+	
+
+// Hiệu ứng
+function createSplash(x, y) { for(let i=0;i<8;i++){const s=document.createElement("div"); s.className="splash"; s.style.left=x+(Math.random()*40-20)+"px"; s.style.top=y+(Math.random()*20-10)+"px"; pond.appendChild(s); setTimeout(()=>s.remove(),600); } }
+function createConfetti(x, y) { for(let i=0;i<15;i++){const c=document.createElement("div"); c.className="confetti"; c.style.left=x+(Math.random()*60-30)+"px"; c.style.top=y+(Math.random()*20-10)+"px"; c.style.background=`hsl(${Math.random()*360},80%,60%)`; pond.appendChild(c); setTimeout(()=>c.remove(),1000); } }
+function createWaterRing(x, y) { const ring = document.createElement("div"); ring.className = "water-ring"; ring.style.left = (x - 10) + "px"; ring.style.top = (y - 10) + "px"; pond.appendChild(ring); setTimeout(() => ring.remove(), 1500); }
+	
+
+function animateRace(){
+  if(!raceStarted || !readyToRun) return;
+  const delta = 1/FPS;
+  raceTimeLeft -= delta;
+  if(raceTimeLeft < 0) raceTimeLeft = 0;
+  updateRaceTimer();
+
+  // Xác định vịt dẫn đầu
+  const leadDuck = ducks.reduce((a,b)=>a.x>b.x?a:b);
+
+  ducks.forEach(d=>{
+    // Nếu vịt không active và không phải dẫn đầu -> bỏ qua
+    if(!d.active && d !== leadDuck) return;
+
+    // Boosting
+    if(!d.boosting && Math.random()<0.004){
+      d.boosting=true;
+      const oldSpeed=d.baseSpeed;
+      const boost=2+Math.random()*3;
+      const duration=800+Math.random()*1200;
+      d.baseSpeed+=boost;
+      setTimeout(()=>{d.baseSpeed=oldSpeed; d.boosting=false;},duration);
+    }
+
+    // Di chuyển
+    if(d === leadDuck){
+      if(d.x < MAX_DISTANCE){
+        d.x += d.baseSpeed + (Math.random()-0.5)*1.2;
+      } else {
+        d.active = false; // dẫn đầu đạt MAX_DISTANCE -> dừng
+      }
+    } else if(raceTimeLeft <= 0){
+      d.active = false; // các vịt khác hết thời gian -> dừng
+    } else {
+      d.x += d.baseSpeed + (Math.random()-0.5)*1.2;
+    }
+
+    d.yOffset += 0.05;
+    d.element.style.left = d.x + "px";
+    d.element.style.transform = `translateY(${Math.sin(d.yOffset)*5}px)`;
+
+    // Bong bóng
+    if(d.active && Math.random()<0.04 && pond.querySelectorAll(".bubble").length<60){
+      const bubble=document.createElement("div");
+      bubble.className="bubble";
+      bubble.style.left=(d.x+40)+"px";
+      bubble.style.top=(d.element.offsetTop+50)+"px";
+      pond.appendChild(bubble);
+      setTimeout(()=>bubble.remove(),2000);
+    }
+  });
+
+  const pondWidth = pond.parentElement.clientWidth;
+  let targetCameraX = 0;
+  if(leadDuck.x > 150) targetCameraX = leadDuck.x - pondWidth/2 + 35;
+  const lerpFactor = raceDuration - raceTimeLeft < 2 ? 0.02 : 0.08;
+  cameraX = lerp(cameraX, targetCameraX, lerpFactor);
+  pond.style.transform = `translateX(${-cameraX}px)`;
+
+  // Di chuyển cây theo camera
+  updateTrees(cameraX); 
+
+  const startLine = document.getElementById("startLine");
+  startLine.style.transform = `translateX(${-cameraX}px)`;  
+  const movebo = document.getElementById("bo");
+  movebo.style.transform = `translateX(${-cameraX}px)`;  
+   const moveboco = document.getElementById("bank");
+  moveboco.style.transform = `translateX(${-cameraX}px)`; 
+	if(hoatanhcao){
+  document.body.style.backgroundPosition = `${-cameraX}px`;
+	}
+
+
+	
+  // Giữ nguyên khối winner hiện tại
+  if(raceTimeLeft <=0 && !winner){
+    winner=ducks.reduce((a,b)=>a.x>b.x?a:b);
+    ducks.forEach(d=>{ if(d!==winner) d.active=false; });
+    result.textContent=`🏆${winner.name.toUpperCase()}`;
+    winner.element.classList.add("winner-glow");
+    
+    vedich.classList.remove("hidden");
+    addWinner(winner.name);
+	const slhs = document.getElementById("soluonghs");
+	const temp= students.length- winners.length;
+    slhs.textContent="Số lượng học sinh: "+ temp+"/"+students.length;  
+	if(traloicauhoi==true){  
+	    document.getElementById("traloi").style.display = "block";
+	}
+	scores[winner.name] = 0;  
+	  if(amnhac)
+		   winSound.play();
+    const x = winner.x + 35;
+    const y = winner.element.offsetTop + 40;
+    createSplash(x, y); createConfetti(x, y-30); createWaterRing(x, y);
+    let splashInterval = setInterval(()=>createSplash(x,y),600);
+    let confettiInterval = setInterval(()=>createConfetti(x,y-30),1000);
+    let ringInterval = setInterval(()=>createWaterRing(x,y),1200);
+    setTimeout(()=>{clearInterval(splashInterval); clearInterval(confettiInterval); clearInterval(ringInterval);},5000);
+
+    startBtn.disabled=true; setupBtn.disabled=false;
+  }
+
+  requestAnimationFrame(animateRace);
+}
+	
+	
+	
+	
+function traloicauhois() {
+	askWinnerQuestion(winner.name);
+    document.getElementById("traloi").style.display = "none";
+}	
+// ===================== 🧠 PHẦN CÂU HỎI SAU KHI CHIẾN THẮNG =====================
+
+
+
+// 🏆 Giao diện cấu hình thêm
+
+/*
+document.querySelectorAll('input[name="qType"]').forEach(r => {
+  r.onchange = e => questionType = e.target.value;
+});*/
+document.getElementById("chkLoai").onchange = e => loaiKhiSai = e.target.checked;
+document.getElementById("hstraloicauhoi").onchange = e => {
+    traloicauhoi = e.target.checked;
+    if(traloicauhoi){
+		   document.getElementById("opcauhoi").style.display = "block";
+	}else{
+		document.getElementById("opcauhoi").style.display = "none";
+	}
+};	
+let thoigiantlch=false;	
+document.getElementById("chtgtl").onchange = e => {
+    thoigiantlch  = e.target.checked;
+    if(thoigiantlch){
+		   
+		   document.getElementById("numbertgtlch").style.display = "block";
+		
+	}else{
+		document.getElementById("numbertgtlch").style.display = "none";
+	}
+};	
+document.getElementById("numQ").onchange = e => soCauToiDa = parseInt(e.target.value);
+document.getElementById("thoigiantraloi").onchange = e => questionTimeLeft = parseInt(e.target.value);
+
+	
+function startQuestionCountdown(seconds) {
+    const countdownEl = document.getElementById("questionCountdown");
+   // const answerBtn = document.getElementById("traloi");
+   TimeLeft = seconds;
+
+    countdownEl.textContent = "⏱"+TimeLeft + "s";
+
+    clearInterval(questionTimer); // nếu đang chạy thì dừng
+    questionTimer = setInterval(() => {
+        TimeLeft--;
+        countdownEl.textContent = "⏱"+TimeLeft + "s";
+        if (TimeLeft <= 0) {
+            clearInterval(questionTimer);
+            countdownEl.textContent = "Hết giờ!";
+            //answerBtn.disabled = true; // vô hiệu hóa nút
+			if(loaiKhiSai){
+				closeQuestion();
+			}else{
+				showNextQuestion(winner.name);
+			}
+        }
+    }, 1000);
+}	
+	
+// 🧩 Hộp hiển thị câu hỏi khi có người thắng
+const qArea = document.createElement("div");
+qArea.id = "questionArea";
+qArea.style.cssText = `
+  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:white; color:black; padding:20px; border-radius:15px;
+  text-align:center; display:none; z-index:900; width:80vw;max-hight=90vh;
+`;
+document.body.appendChild(qArea);
+
+let cauHienTai = 0;
+let cauhoiketiep = 0;
+
+// 📣 Hàm gọi khi có người thắng
+function askWinnerQuestion(name) {
+  cauHienTai = 0;
+  showNextQuestion(name);
+}
+function checkAnswer(chon, dung) {
+  const buttons = qArea.querySelectorAll("button"); // Lấy tất cả nút trong vùng câu hỏi
+  buttons.forEach((btn, index) => {
+    // Chỉ highlight các nút A, B, C, D (loại bỏ nút "Bỏ qua")
+    if (btn.innerText.match(/^[A-D]\./)) {
+      if (index === dung) {
+        btn.style.backgroundColor = "lightgreen"; // Đáp án đúng
+      } else if (index === chon) {
+        btn.style.backgroundColor = "lightcoral"; // Đáp án sai đã chọn
+      } else {
+        btn.style.opacity = "0.6";
+      }
+      btn.disabled = true; // Không cho bấm lại
+    }
+  });
+}
+// 🧠 Hiển thị câu hỏi kế tiếp
+function showNextQuestion(name) {
+  if (cauHienTai >= soCauToiDa) {
+    qArea.style.display = "block"; 
+    qArea.innerHTML = `<h3>🎉Số điểm ${name} : ${scores[name]} điểm</h3><button onclick="closeht()">Đóng</button>`;
+    return;
+  }
+  cauHienTai++;
+  cauhoiketiep++;	
+
+  if (questionType === "tuluan") {
+	
+    const q = questionsTuLuan[cauhoiketiep % questionsTuLuan.length];
+    qArea.innerHTML = `
+      <div id="questionCountdown"></div>
+      <h3>Câu ${cauHienTai}: ${q.q}</h3>
+      <button onclick="showAnswer('${q.answer}','${name}')">👀 Hiện đáp án</button><br><br>
+      <button onclick="closeQuestion()">Bỏ qua</button>
+    `;
+	  if(thoigiantlch)
+	  startQuestionCountdown(questionTimeLeft);
+  }
+	
+	else {
+    const q = questionsTracNghiem[cauhoiketiep % questionsTracNghiem.length];
+    qArea.innerHTML = `
+       <div id="questionCountdown"></div>
+      <h3>Câu ${cauHienTai}: ${q.q}</h3>
+      ${q.opts.map((o, i) => `<button style="margin:5px" onclick="teacherCheck(${i},${q.answer},'${name}')">${String.fromCharCode(65 + i)}. ${o}</button>`).join("<br>")}
+      <br><br><button class="btn_boqua" onclick="closeQuestion()">Bỏ qua</button>
+    `;
+		if(thoigiantlch)
+	    startQuestionCountdown(questionTimeLeft);
+  }
+
+  qArea.style.display = "block";
+}
+
+// 👩‍🏫 Với tự luận: hiện đáp án
+function showAnswer(ans, name) {
+      clearInterval(questionTimer); // nếu đang chạy thì dừng
+	
+  qArea.innerHTML = `
+    <h3>Đáp án: ${ans}</h3>
+    <button onclick="markAnswer(true,'${name}')">✅ Đúng</button>
+    <button onclick="markAnswer(false,'${name}')">❌ Sai</button>
+  `;
+}
+
+// 👩‍🏫 Với trắc nghiệm: giáo viên chọn nút
+function teacherCheck(chon, dung, name) {
+     clearInterval(questionTimer); // nếu đang chạy thì dừng
+	
+  checkAnswer(chon, dung); // 👉 Gọi để highlight đáp án	
+  const correct = (chon === dung);
+  setTimeout(() => {  // Chờ 1 giây để người xem thấy highlight
+    markAnswer(correct, name);
+  }, 1000);	
+}
+
+// ✅ Ghi điểm hoặc loại học sinh
+function markAnswer(correct, name) {
+      clearInterval(questionTimer); // nếu đang chạy thì dừng
+	
+  if (correct) {
+	playSound(dung,amnhac);  
+    if (!scores[name]) scores[name] = 0;
+    scores[name] += 10;
+    //alert(`✅ ${name} được cộng 10 điểm!`);
+    saveWinnersData();
+    updateWinnerList();
+    showNextQuestion(name);
+  } else {
+		playSound(sai,amnhac);    
+    //alert(`❌ ${name} trả lời sai!`);
+    if (loaiKhiSai) {
+      alert(`🚫 ${name} bị loại khỏi lượt hỏi!`);
+      closeQuestion();
+    } else {
+      showNextQuestion(name);
+    }
+  }
+}
+function resetQuestion() {
+	  qArea.style.display = "none";
+}
+// 🔒 Đóng hộp câu hỏi
+function closeQuestion() {
+  qArea.style.display = "none";
+  clearInterval(questionTimer); // nếu đang chạy thì dừng
+  if (loaiKhiSai) {
+	  qArea.style.display = "block"; 
+      qArea.innerHTML = `<h3>🎉Số điểm ${winner.name} : ${scores[winner.name]} điểm</h3><button onclick="closeht()">Đóng</button>`;
+    } else {
+      showNextQuestion(winner.name);
+    }	
+}
+function closeht() {
+  qArea.style.display = "none";
+}
+	
+
+</script>
+</body>
+</html>
