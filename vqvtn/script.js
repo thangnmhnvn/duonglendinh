@@ -444,8 +444,8 @@ const GameApp = {
     endQuiz: function() {
         this.el.question.text(`🎉 Hoàn thành! Tổng điểm: ${this.state.scoreRound}`);
         this.el.options.empty();
-        this.el.nextBtn.text("Chơi lại");
-        this.state.currentQIndex = -1; // Reset để nút chơi lại hoạt động
+        this.el.nextBtn.text("Về Vòng Quay");
+        // this.state.currentQIndex = -1; // Reset để nút chơi lại hoạt động
     },
 
     // ============================================================
@@ -554,6 +554,11 @@ const GameApp = {
         }());
     },
 
+    cleanRound: function () {
+        this.el.question.text(`Nhấn "Bắt đầu" để chơi!`);
+        this.el.options.empty();
+    },
+
     // BIND EVENT LISTENERS
     bindEvents: function() {
         const self = this;
@@ -602,6 +607,7 @@ const GameApp = {
             self.el.wheelScreen.hide();
             self.el.gameScreen.show();
             self.el.playerName.text("👤: " + self.state.currentPlayer);
+            self.cleanRound();
             self.prepareQuiz(); // Chuẩn bị game mới
         });
 
@@ -630,6 +636,17 @@ const GameApp = {
         }).prop("checked", true);
 
         // 4. Game Controls
-        this.el.nextBtn.click(() => this.nextQuestion());
+        this.el.nextBtn.click(() => {
+            if(this.el.nextBtn.text() == "Về Vòng Quay") {
+                if (self.state.currentPlayer) {
+                    self.updateScoreStorage(self.state.currentPlayer, self.state.scoreRound);
+                }
+                self.stopTimer();
+                self.el.gameScreen.hide();
+                self.el.wheelScreen.show();
+            } else {
+                this.nextQuestion();
+            }
+        });
     }
 };

@@ -10,23 +10,23 @@
             "tenlop": "Lớp 6E",
             "students": ["Nguyễn Trường An", "Lê Nhật Anh", "Nguyễn Lê Hoài Anh", "Vũ Thiên Ân", "Nguyễn Băng Băng", "Vũ Quỳnh Chi", "Nguyễn Quỳnh Chi", "Nguyễn Nhân Chinh", "Nguyễn Trọng Đạt", "Nguyễn Duy Đông", "Nguyễn Minh Đức", "Lê Tiến Dũng", "Trần Thị Thu Hà", "Đặng An Khang", "Vũ Tử Khánh", "Bùi Đình Tùng Lâm", "Trần Bảo Lâm", "Nguyễn Khánh Linh", "Nguyễn Vũ Minh", "Nguyễn Tuệ Minh", "Vũ Duy Nam", "Ng. Thị Kim Ngân", "Hoàng Trọng Nghĩa", "Nguyễn Thị Thảo Nguyên", "Nguyễn Tuệ Nhi", "Nguyễn Quỳnh Phương", "Nguyễn Như Quỳnh", "Vương Băng Tâm", "Nguyễn Minh Tùng", "Nguyễn Thảo Vân", "Nguyễn Nhật Vy", "Trần Hà Vy"],
             "questions": [
-                { "q": "Từ nào sau đây là từ láy hoàn toàn?", "answer": 0 },
+                { "q": "Từ nào sau đây là từ láy hoàn toàn?", "opts": ["Xanh xao", "Xinh xắn", "Mặt mũi", "Thăm thẳm"], "answer": 3 },
                 { "q": "Trong câu 'Em làm bài tập về nhà.', bộ phận nào là chủ ngữ?", "opts": ["Em", "làm bài tập", "về nhà", "bài tập"], "answer": 0 }
             ]
         };
     </script>
-    <script src="js/jquery-3.7.1.min.js"></script>
-    <script src="js/createjs.min.js"></script>
-    <script src="js/ducks.js"></script>
-    <script src="js/script.js"></script>
+    <script src="<?= $data['media_url'] ?>js/jquery-3.7.1.min.js"></script>
+    <script src="<?= $data['media_url'] ?>js/createjs.min.js"></script>
+    <script src="<?= $data['media_url'] ?>js/ducks.js"></script>
+    <script src="<?= $data['media_url'] ?>js/script.js"></script>
 </head>
 <body>
 
 <div id="controls">
     <div id="raceTimer"></div>
     <div class="buton_dk">
-        <button id="setupBtn" class="btn-overlay"><img src="button-bg.png" alt=""><span>Chơi tiếp</span></button>
-        <button id="startBtn" class="btn-overlay" disabled><img src="button-bg.png" alt=""><span>Bắt đầu</span></button>
+        <button id="setupBtn" class="btn-overlay"><img src="<?= $data['media_url'] ?>button-bg.png" alt=""><span>Chơi tiếp</span></button>
+        <button id="startBtn" class="btn-overlay" disabled><img src="<?= $data['media_url'] ?>button-bg.png" alt=""><span>Bắt đầu</span></button>
     </div>
     <div class="menu">
         <h2 id="lopname"></h2>
@@ -95,8 +95,8 @@
                 </div>
 
                 <div class="btn-actions">
-                    <button id="resetGame" class="btn-overlay"><img src="button_tl.png" alt=""><span>Reset Game</span></button>
-                    <button id="closeMenu" class="btn-overlay"><img src="button_tl.png" alt=""><span>OK</span></button>
+                    <button id="resetGame" class="btn-overlay"><img src="<?= $data['media_url'] ?>button_tl.png" alt=""><span>Reset Game</span></button>
+                    <button id="closeMenu" class="btn-overlay"><img src="<?= $data['media_url'] ?>button_tl.png" alt=""><span>OK</span></button>
                 </div>
             </div>
         </div>
@@ -115,7 +115,7 @@
 </div>
 
 <div class="traloicauhoi">
-    <button id="traloi" class="btn-overlay"><img src="button_tl.png" alt=""><span>Trả lời câu hỏi</span></button>
+    <button id="traloi" class="btn-overlay"><img src="<?= $data['media_url'] ?>button_tl.png" alt=""><span>Trả lời câu hỏi</span></button>
 </div>
 
 <div id="result"></div>

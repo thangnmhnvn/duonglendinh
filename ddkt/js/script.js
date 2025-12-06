@@ -1,6 +1,6 @@
 /**
  * DUCK RACE GAME - JQUERY MODULE
- * Update: Remove HTML Audio tags, render via JS
+ * Update: Camera stops to show Finish Line at 80% screen width
  */
 
 const DuckRaceApp = {
@@ -8,12 +8,11 @@ const DuckRaceApp = {
     // 1. CẤU HÌNH (CONFIG)
     // ============================================================
     config: {
-        basePath: "", // Đường dẫn gốc chứa file
+        basePath: "",
 
-        // Cấu hình Âm thanh
         sounds: {
-            win: "win.mp3",
-            click: "bling.mp3", // Dùng cho đếm ngược (3, 2, 1)
+            win: "3.mp3",
+            click: "bling.mp3",
             correct: "dung.mp3",
             wrong: "sai.mp3",
             bgm: "nhacnen.mp3",
@@ -21,12 +20,11 @@ const DuckRaceApp = {
             start: "airhorn.mp3",
             covu: "cheer.mp3",
             winrace: "3.mp3",
+            count5s: "count5s.m4a",
             hover: "hover.mp3"
         },
 
-        // Cấu hình Hình ảnh nền
         images: {
-            bg_water: "songnuoc.gif",
             bg_ice: "sanbang.jpg",
             bg_grass: "duongduaco.jpg",
             tree_bank: "boco.jpg",
@@ -34,22 +32,26 @@ const DuckRaceApp = {
             shore: "bo.png",
         },
 
-        // Cấu hình Assets (Vịt, Cây, Hoa...)
         assets: {
             tree:   { folder: "cay",     prefix: "cay_",       ext: ".png", count: 12 },
             flower: { folder: "hoa",     prefix: "hoala_",     ext: ".png", count: 22 },
             rock:   { folder: "da",      prefix: "da_",        ext: ".png", count: 26 },
-
-            duck:   { folder: "vit",     prefix: "vit (",        suffix: ").png", count: 60, scaleX: false },
-            boat:   { folder: "thuyen",  prefix: "thuyen (",     suffix: ").gif", count: 12, scaleX: false },
-            bird:   { folder: "chim",    prefix: "chimthuan (",  suffix: ").gif", count: 25, reverse_prefix: "chimnguoc (", reverse_start: 25, reverse_end: 36, scaleX: true },
-            animal: { folder: "dongvat", prefix: "dongvat (",    suffix: ").gif", count: 19, reverse_prefix: "dongvat (",    reverse_start: 20, reverse_end: 22, scaleX: true }
+            boat:   { folder: "thuyen",  prefix: "thuyen (",     suffix: ").gif", count: 10, scaleX: false },
+            bird:   { folder: "chim",    prefix: "chimthuan (",  suffix: ").gif", count: 10,
+                reverse_prefix: "chimnguoc (",
+                reverse_start: 25, reverse_end: 36, scaleX: true
+            },
+            animal: { folder: "dongvat", prefix: "dongvat (",    suffix: ").gif", count: 10,
+                reverse_prefix: "dongvat (",
+                reverse_start: 20, reverse_end: 22, scaleX: true
+            }
         },
 
         fps: 60,
         pondLength: 13000,
-        maxDistance: 11000,
-        parallaxSpeed: 0.5
+        maxDistance: 0,
+        parallaxSpeed: 0.5,
+        targetSpeedPPS: 250
     },
 
     // ============================================================
@@ -78,7 +80,7 @@ const DuckRaceApp = {
 
     init: function() {
         this.cacheDOM();
-        this.initAudio(); // Khởi tạo âm thanh từ JS
+        this.initAudio();
         this.initData();
         this.bindEvents();
         this.setupEnvironment();
@@ -102,9 +104,9 @@ const DuckRaceApp = {
             volumeSlider: $("#volumeSlider"), raceTimeInput: $("#thoigiandua"),
             excludeCheckbox: $("#excludeWinners"), hqAnimCheckbox: $("#hoatanh"),
 
-            startLine: $("#startLine"), finishLine: $("#finishLine"), vachXuatPhat: $("#vachxuatphat"),
-            vachVeDich: $("#vachvedich"), bank: $("#bank"), bo: $("#bo"),
-            raceTimer: $("#raceTimer")
+            startLine: $("#startLine"), finishLine: $("#finishLine"),
+            vachXuatPhat: $("#vachxuatphat"), vachVeDich: $("#vachvedich"),
+            bank: $("#bank"), bo: $("#bo"), raceTimer: $("#raceTimer")
         };
 
         if ($("#pond canvas").length === 0) {
@@ -115,12 +117,9 @@ const DuckRaceApp = {
         this.el.canvas.css({position: 'absolute', top: 0, left: 0, zIndex: 0, pointerEvents: 'none'});
     },
 
-    // --- THAY ĐỔI CHÍNH Ở ĐÂY ---
     initAudio: function() {
         const sounds = this.config.sounds;
         const path = this.config.basePath;
-
-        // Hàm helper tạo Audio
         const create = (file) => new Audio(path + file);
 
         this.audio = {
@@ -133,10 +132,10 @@ const DuckRaceApp = {
             winrace: create(sounds.winrace),
             covu: create(sounds.covu),
             bgm: create(sounds.bgm),
+            count5s: create(sounds.count5s),
             hover: create(sounds.hover)
         };
 
-        // Cấu hình nhạc nền
         if (this.audio.bgm) {
             this.audio.bgm.loop = true;
             this.audio.bgm.volume = 0.5;
@@ -146,7 +145,6 @@ const DuckRaceApp = {
     // ============================================================
     // 4. DATA & UTILS
     // ============================================================
-    // ... (Giữ nguyên phần initData, getStorageKey, loadStorage, saveStorage từ code trước)
     initData: function() {
         const rawData = (typeof data !== 'undefined') ? data : { tenlop: "Lớp Demo", students: [], questions: [] };
         this.state.students = rawData.students || [];
@@ -180,18 +178,19 @@ const DuckRaceApp = {
         localStorage.setItem(this.getStorageKey("scores"), JSON.stringify(this.state.scores));
         localStorage.setItem(this.getStorageKey("excludeWinnersNextRound"), this.state.excludeWinnersNextRound);
     },
-
     getImagePath: function(key) { return this.config.basePath + this.config.images[key]; },
     getAssetPath: function(type, index, isReverse = false) {
         const asset = this.config.assets[type];
         if (!asset) return "";
         let idxStr = (["tree", "flower", "rock"].includes(type) && index < 10) ? "0" + index : index;
+        if(type == "duck") {
+            idxStr = Math.floor(Math.random() * 70) + 1;
+        }
         let fileName = (isReverse && asset.reverse_prefix)
             ? asset.reverse_prefix + idxStr + (asset.suffix || asset.ext)
             : asset.prefix + idxStr + (asset.suffix || asset.ext);
         return this.config.basePath + asset.folder + "/" + fileName;
     },
-
     shuffleArray: function(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -219,19 +218,23 @@ const DuckRaceApp = {
         const last = parts[parts.length - 1];
         return initials.join(' ') + ' ' + last.charAt(0).toUpperCase() + last.slice(1).toLowerCase();
     },
-
     playSound: function(key) {
-        // playSound giờ gọi trực tiếp play() trên object Audio mới tạo
         if (this.state.isPlayingMusic || key !== 'bgm') {
             if (this.audio[key]) {
                 if (key !== 'bgm') this.audio[key].currentTime = 0;
-                this.audio[key].play().catch(e => console.log("Audio blocked:", e));
+                this.audio[key].play().catch(e => {});
             }
+        }
+    },
+    stopSound: function (key) {
+        if (this.audio[key]) {
+            this.audio[key].pause();
+            this.audio[key].currentTime = 0;
         }
     },
 
     // ============================================================
-    // 5. ENVIRONMENT & GAME LOGIC
+    // 5. ENVIRONMENT
     // ============================================================
     spawnObjects: function(count, type, className) {
         this.state[className + 's'] = [];
@@ -276,6 +279,161 @@ const DuckRaceApp = {
             }
         });
     },
+
+
+    // ============================================================
+    // 🔥 HÀM MỚI: VẼ VỊT BẰNG CANVAS
+    // ============================================================
+    drawDuck: function(ctx, w, h, index) {
+        ctx.clearRect(0, 0, w, h);
+
+        // Tạo màu ngẫu nhiên cho vịt dựa trên index để không con nào giống con nào
+        // Màu gốc là Vàng (Hue ~ 45-55). Ta dao động nhẹ.
+        const hue = 45 + (index % 15) * 2;
+        const bodyColor = `hsl(${hue}, 100%, 50%)`;
+        const wingColor = `hsl(${hue}, 100%, 45%)`; // Cánh đậm hơn chút
+
+        ctx.save();
+
+        // 1. THÂN VỊT (Hình bầu dục)
+        ctx.fillStyle = bodyColor;
+        ctx.beginPath();
+        ctx.ellipse(w * 0.5, h * 0.65, w * 0.3, h * 0.22, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Viền thân
+        ctx.strokeStyle = "#D4A017";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 2. CÁNH (Hình bầu dục nhỏ)
+        ctx.fillStyle = wingColor;
+        ctx.beginPath();
+        ctx.ellipse(w * 0.55, h * 0.65, w * 0.12, h * 0.08, 0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // 3. ĐẦU (Hình tròn)
+        ctx.fillStyle = bodyColor;
+        ctx.beginPath();
+        ctx.arc(w * 0.7, h * 0.45, w * 0.16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+
+        // 4. MẮT
+        // Lòng trắng
+        ctx.fillStyle = "white";
+        ctx.beginPath();
+        ctx.arc(w * 0.75, h * 0.42, w * 0.05, 0, Math.PI * 2);
+        ctx.fill();
+        // Con ngươi đen
+        ctx.fillStyle = "black";
+        ctx.beginPath();
+        ctx.arc(w * 0.77, h * 0.42, w * 0.02, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 5. MỎ (Màu cam)
+        ctx.fillStyle = "#FF5722";
+        ctx.beginPath();
+        ctx.moveTo(w * 0.82, h * 0.48); // Gốc mỏ trên
+        ctx.quadraticCurveTo(w * 0.98, h * 0.45, w * 0.95, h * 0.52); // Mỏ trên cong ra
+        ctx.quadraticCurveTo(w * 0.88, h * 0.58, w * 0.82, h * 0.52); // Mỏ dưới cong vào
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.restore();
+    },
+
+    getDuckStyle: function (arg) {
+        const style = new lib["style" + arg[0]]();
+        style.x = arg[1];
+        style.y = arg[2];
+        style.scaleX = style.scaleY = arg[3];
+        return style;
+    },
+
+    createDuckCanvas: function () {
+        const canvas = document.createElement('canvas');
+        canvas.width = 150;
+        canvas.height = 150;
+
+        const stage = new createjs.Stage(canvas);
+        let eq = Math.floor(Math.random() * 2) + 1;
+
+        const base = new lib["base" + eq]();
+        base.x = 45;  // Giữa canvas (170/2)
+        base.y = 50; // Hạ thấp xuống chút
+        base.scaleX = base.scaleY = 1; // Thu nhỏ lại chút cho vừa khung
+
+        stage.addChild(base);
+
+
+        
+        const styles = [
+            [1, 79, 38, 0.72],
+            [1, 79, 38, 0.72],
+            [2, 60, 95, 0.72],
+            [3, 80, 42, 0.72],
+            [4, 60, 62, 0.72],
+            [5, 60, 62, 0.72],
+            [6, 63, 62, 0.72],
+            [7, 80, 54, 0.72],
+            [8, 90, 44, 0.72],
+            [9, 91, 50, 0.72],
+            [10, 59, 62, 0.72],
+            [11, 89, 50, 0.72],
+            [12, 77, 42, 0.72],
+            [13, 136, 58, 0.71],
+            [14, 92, 25, 0.7],
+            [15, 60, 62, 0.72],
+            [16, 49, 56, 0.68],
+            [17, 59, 62, 0.72],
+            [18, 60, 65, 0.71],
+            [19, 68, 33, 0.71],
+            [20, 64, 33, 1],
+            [21, 60, 62, 0.72],
+            [22, 60, 62, 0.72],
+            [23, 74, 30, 1],
+            [24, 80, 40, 0.9],
+            [25, 80, 34, 0.9],
+            [26, 60, 64, 0.7],
+            [27, 60, 64, 0.72],
+            [28, 74, 32, 0.72],
+            [29, 145, 30, 0.72],
+            [30, 98, 37, 0.72],
+            [31, 82, 37, 0.72],
+            [32, 60, 64, 0.71],
+            [33, 73, 38, 0.71],
+            [34, 59, 64, 0.71],
+            [35, 64, 57, 0.71],
+            [36, 60, 63, 0.72],
+            [37, 60, 61, 0.72],
+            [38, 40, 47, 0.8],
+            [39, 85, 50, 0.72],
+            [40, 60, 63, 0.72],
+            [41, 78, 38, 0.72],
+            [42, 85, 45, 0.75],
+            [43, 59, 63, 0.73],
+            [44, 76, 30, 0.73],
+            [45, 84, 69, 0.75],
+            [46, 70, 38, 0.75],
+            [47, 80, 20, 0.75],
+            [48, 85, 60, 0.75]
+        ];
+
+        const eq2 = Math.floor(Math.random() * (48 + 1));
+        stage.addChild(this.getDuckStyle(styles[eq2]));
+
+        // const style = this.getDuckStyle(48, 85, 60, 0.75);
+        // stage.addChild(style);
+
+        stage.update(); // Render 1 lần (vì hình này tĩnh, không cần tick liên tục)
+
+        return canvas;
+    },
+
+    // ============================================================
+    // 6. SETUP RACE
+    // ============================================================
     setupRace: function() {
         this.state.raceStarted = false;
         this.state.readyToRun = false;
@@ -289,10 +447,18 @@ const DuckRaceApp = {
         this.el.vachVeDich.addClass("hidden");
         this.el.vachXuatPhat.removeClass("hidden");
         this.el.startLine.css('transform', 'translateX(0px)');
-        this.el.finishLine.css('left', 1000 + "px");
-        this.el.finishLine.css('transform', 'translateX(0px)');
+
+        // 1. Lấy thời gian từ input
         this.state.raceDuration = parseInt(this.el.raceTimeInput.val()) || 10;
         this.state.raceTimeLeft = this.state.raceDuration;
+
+        // 2. Tính toán quãng đường đích (Đảm bảo về đích đúng thời gian đã đặt)
+        this.config.maxDistance = this.config.targetSpeedPPS * this.state.raceDuration;
+        this.config.pondLength = this.config.maxDistance + 2000;
+
+        // 3. Đặt vạch đích
+        this.el.finishLine.css('left', (this.config.maxDistance + 125)+ "px");
+        this.el.finishLine.css('transform', 'translateX(0px)');
 
         let currentNames = [...this.state.students];
         if (this.el.excludeCheckbox.is(":checked")) {
@@ -308,38 +474,71 @@ const DuckRaceApp = {
         const mode = this.state.gameMode;
         const assetConfig = this.config.assets[mode];
 
-        let bgImageKey = "bg_water";
+        let bgImageKey = null;
         if (mode === 'bird') bgImageKey = "bg_ice";
-        if (mode === 'dongvat') bgImageKey = "bg_grass";
+        if (mode === 'animal') bgImageKey = "bg_grass";
         const bgUrl = this.getImagePath(bgImageKey);
-        $("body").css({
-            background: `url("${bgUrl}") ${this.state.highQualityAnimation ? 'repeat-x center bottom' : 'no-repeat center center'}`,
-            backgroundSize: 'cover'
-        });
+        if(bgImageKey !== null) {
+            $("body").css({
+                background: `url("${bgUrl}") ${this.state.highQualityAnimation ? 'repeat-x center bottom' : 'no-repeat center center'}`,
+                backgroundSize: 'cover'
+            });
+        } else {
+            $("body").css({
+                background: '',
+                backgroundSize: ''
+            });
+        }
+
+        // Tính tốc độ cơ bản (Pixel per frame)
+        const baseSpeedPerFrame = this.config.targetSpeedPPS / this.config.fps;
+
+
+        this.shuffleArray(currentNames);
 
         currentNames.forEach((name, i) => {
             const shortName = this.shortenName(name);
             const duckDiv = $("<div>").addClass("duck").css("top", (spacing * (i + 1)) + "px");
-            let displayIdx = (i % assetConfig.count) + 1;
-            let isReverse = false;
-            let transformStyle = "";
-            if (assetConfig.scaleX) {
-                if (assetConfig.reverse_start && i >= assetConfig.reverse_start && i <= assetConfig.reverse_end) {
-                    isReverse = true;
-                    if(mode === 'bird') displayIdx = i - 24;
-                    if(mode === 'dongvat') displayIdx = i;
-                    transformStyle = "scaleX(-1)";
+            if (mode === 'duck') {
+                const canvas = this.createDuckCanvas();
+                duckDiv.append(canvas);
+                duckDiv.append(`<div class="name">${shortName}</div>`);
+                duckDiv.append('<div class="index">'+data.students.indexOf(name)+'</div>');
+            } else {
+                let displayIdx = (i % assetConfig.count) + 1;
+                let isReverse = false;
+                let transformStyle = "";
+                if (assetConfig.scaleX) {
+                    if (assetConfig.reverse_start && i >= assetConfig.reverse_start && i <= assetConfig.reverse_end) {
+                        isReverse = true;
+                        // if(mode === 'bird') displayIdx = i - 24;
+                        // if(mode === 'animal') displayIdx = i;
+                        transformStyle = "scaleX(-1)";
+                    }
                 }
+                const imgPath = this.getAssetPath(mode, displayIdx, isReverse);
+                duckDiv.html(`<img src="${imgPath}" style="transform: ${transformStyle}"><div class="name">${shortName}</div>`);
             }
-            const imgPath = this.getAssetPath(mode, displayIdx, isReverse);
-            duckDiv.html(`<img src="${imgPath}" style="transform: ${transformStyle}"><div class="name">${shortName}</div>`);
+
             this.el.pond.append(duckDiv);
-            this.state.ducks.push({ $el: duckDiv, name: name, x: 0, yOffset: Math.random() * 10, baseSpeed: 2 + Math.random() * 1, boosting: false, active: true });
+
+            const randomFactor = 0.9 + Math.random() * 0.2;
+
+            this.state.ducks.push({
+                $el: duckDiv,
+                name: name,
+                x: 0,
+                yOffset: Math.random() * 10,
+                baseSpeed: baseSpeedPerFrame * randomFactor,
+                boosting: false,
+                active: true
+            });
         });
         const remaining = this.state.students.length - this.state.winners.length;
         this.el.studentCount.text(`Số lượng học sinh: ${remaining}/${this.state.students.length}`);
         this.el.startBtn.prop("disabled", false);
     },
+
     startRace: async function() {
         if (this.state.ducks.length === 0) return;
         this.el.startBtn.prop("disabled", true);
@@ -349,7 +548,6 @@ const DuckRaceApp = {
 
         for (let i = 3; i > 0; i--) {
             this.el.countdown.text(i);
-            // this.playSound('click');
             await new Promise(r => setTimeout(r, 1000));
         }
         this.playSound('start');
@@ -363,47 +561,89 @@ const DuckRaceApp = {
         this.state.raceStarted = true;
         requestAnimationFrame((ts) => this.animateRace(ts));
     },
+
+    // ============================================================
+    // 7. ANIMATE RACE (Logic Camera Updated)
+    // ============================================================
     animateRace: function(ts) {
         if (!this.state.raceStarted || !this.state.readyToRun) return;
+
         const delta = 1 / this.config.fps;
+
+        // 1. Đếm ngược
         this.state.raceTimeLeft -= delta;
         if (this.state.raceTimeLeft < 0) this.state.raceTimeLeft = 0;
         this.el.raceTimer.text(`⏱ ${Math.ceil(this.state.raceTimeLeft)}s`);
+
         const leadDuck = this.state.ducks.reduce((a, b) => a.x > b.x ? a : b);
 
         this.state.ducks.forEach(d => {
-            if (!d.active && d !== leadDuck) return;
+            if (this.state.winner) return; // Dừng nếu đã có người thắng
+            if (!d.active) return;
+
+            // Boost
             if (!d.boosting && Math.random() < 0.004) {
                 d.boosting = true;
                 const oldSpeed = d.baseSpeed;
-                d.baseSpeed += 2 + Math.random() * 3;
+                d.baseSpeed *= 1.5;
                 setTimeout(() => { d.baseSpeed = oldSpeed; d.boosting = false; }, 800 + Math.random() * 1200);
             }
-            let moveAmt = d.baseSpeed + (Math.random() - 0.5) * 1.2;
-            if (d === leadDuck) {
-                if (d.x < this.config.maxDistance) d.x += moveAmt; else d.active = false;
-            } else if (this.state.raceTimeLeft <= 0) { d.active = false; } else { d.x += moveAmt; }
+
+            let moveAmt = d.baseSpeed;
+            d.x += moveAmt;
+
+            // KIỂM TRA ĐÍCH
+            if (d.x >= this.config.maxDistance) {
+                d.x = this.config.maxDistance;
+                if (!this.state.winner) {
+                    this.state.raceTimeLeft = 0;
+                    this.el.raceTimer.text(`⏱ 0s`);
+                    this.handleWin(d);
+                }
+            }
+
             d.yOffset += 0.05;
             d.$el.css({ left: d.x + "px", transform: `translateY(${Math.sin(d.yOffset) * 5}px)` });
         });
 
+        // --- CAMERA LOGIC (ĐÃ CẬP NHẬT) ---
         const pondWidth = this.el.pondContainer.width();
         let targetCameraX = 0;
-        if (leadDuck.x > 150) targetCameraX = leadDuck.x - pondWidth / 2 + 35;
-        this.state.cameraX = this.lerp(this.state.cameraX, targetCameraX, (this.state.raceDuration - this.state.raceTimeLeft < 2) ? 0.02 : 0.08);
+
+        // Theo dõi vịt dẫn đầu (giữ ở giữa màn hình)
+        if (leadDuck.x > 150) targetCameraX = leadDuck.x - pondWidth / 2 + 100;
+
+        // 🔥 ĐIỀU CHỈNH: Dừng camera sao cho vạch đích nằm ở 80% (4/5) màn hình
+        // Công thức: MaxCamera = Vị trí Đích - (0.8 * Chiều rộng màn hình)
+        const maxCam = this.config.maxDistance - pondWidth * 0.6;
+
+        if (targetCameraX > maxCam) targetCameraX = maxCam;
+
+        // Di chuyển camera mượt mà
+        this.state.cameraX = this.lerp(this.state.cameraX, targetCameraX, 0.08);
         const transformStyle = `translateX(${-this.state.cameraX}px)`;
+
         this.el.pond.css('transform', transformStyle);
         this.el.startLine.css('transform', transformStyle);
         this.el.finishLine.css('transform', transformStyle);
         this.el.bo.css('transform', transformStyle);
         this.el.bank.css('transform', transformStyle);
+
         if (this.state.highQualityAnimation) $("body").css('backgroundPosition', `${-this.state.cameraX}px`);
         this.updateParallax();
-        if (this.state.raceTimeLeft <= 0 && !this.state.winner) this.handleWin(leadDuck);
-        else requestAnimationFrame((ts) => this.animateRace(ts));
+
+        if (!this.state.winner) {
+            // Hết giờ mà chưa ai thắng -> Xử lý thắng cho con dẫn đầu
+            if (this.state.raceTimeLeft <= 0) {
+                this.handleWin(leadDuck);
+            } else {
+                requestAnimationFrame((ts) => this.animateRace(ts));
+            }
+        }
     },
+
     handleWin: function(winnerDuck) {
-        this.playSound('winrace')
+        this.playSound('winrace');
         this.state.winner = winnerDuck;
         this.state.ducks.forEach(d => { if (d !== winnerDuck) d.active = false; });
         this.el.result.text(`🏆 ${winnerDuck.name.toUpperCase()}`);
@@ -418,6 +658,8 @@ const DuckRaceApp = {
         this.el.startBtn.prop("disabled", true);
         this.el.setupBtn.prop("disabled", false);
     },
+
+    // ... (Các hàm Utils và Quiz giữ nguyên) ...
     addWinner: function(name) {
         if (!this.state.scores[name]) this.state.scores[name] = 0;
         if (!this.state.winners.includes(name)) this.state.winners.push(name);
@@ -470,6 +712,11 @@ const DuckRaceApp = {
     showNextQuestion: function() {
         const name = this.state.winner.name;
         if (this.state.currentQIndex >= this.state.maxQuestions) {
+            if(this.state.scores[name] > 0) {
+                this.playSound('win');
+            } else {
+                this.playSound('wrong');
+            }
             this.el.questionArea.html(`<h3>🎉 Số điểm ${name}: ${this.state.scores[name] || 0} điểm</h3><button id="closeQBtn">Đóng</button>`);
             $("#closeQBtn").on("click", () => this.el.questionArea.hide());
             this.el.questionArea.show();
@@ -484,7 +731,9 @@ const DuckRaceApp = {
     renderTuLuan: function(q, name) {
         this.el.questionArea.html(`<div id="qTimerDisplay" style="font-size:36px; font-weight:bold;"></div><h3>Câu ${this.state.currentQIndex}: ${q.q}</h3><button id="showAnsBtn">👀 Hiện đáp án</button><br><br><div id="ansContainer" style="display:none; margin-top:10px;"><h3>Đáp án: ${q.answer}</h3><button class="markBtn" data-correct="true">✅ Đúng</button><button class="markBtn" data-correct="false">❌ Sai</button></div><button id="skipQBtn" class="btn_boqua" style="margin-top:10px;">Bỏ qua</button>`);
         $("#showAnsBtn").click(() => { clearInterval(this.state.questionTimerId); $("#ansContainer").show(); $("#showAnsBtn").hide(); });
-        $(".markBtn").click((e) => { this.handleAnswerResult($(e.currentTarget).data("correct"), name); });
+        $(".markBtn").click((e) => {
+            this.handleAnswerResult($(e.currentTarget).data("correct"), name);
+        });
         $("#skipQBtn").click(() => this.closeQuestion());
     },
     renderTracNghiem: function(q, name) {
@@ -493,10 +742,16 @@ const DuckRaceApp = {
             clearInterval(this.state.questionTimerId);
             const $btn = $(e.currentTarget);
             const selectedIdx = $btn.data("idx");
+            this.stopSound('count5s');
+
             if (selectedIdx === q.answer) {
-                $btn.css("background-color", "lightgreen"); setTimeout(() => this.handleAnswerResult(true, name), 1000);
+                $btn.css("background-color", "lightgreen");
+                this.playSound('correct');
+                setTimeout(() => this.handleAnswerResult(true, name), 1000);
             } else {
-                $btn.css("background-color", "lightcoral"); $(`.optBtn[data-idx="${q.answer}"]`).css("background-color", "lightgreen"); setTimeout(() => this.handleAnswerResult(false, name), 1000);
+                $btn.css("background-color", "lightcoral"); $(`.optBtn[data-idx="${q.answer}"]`).css("background-color", "lightgreen");
+                this.playSound('wrong');
+                setTimeout(() => this.handleAnswerResult(false, name), 1000);
             }
             $(".optBtn").prop("disabled", true);
         });
@@ -509,6 +764,9 @@ const DuckRaceApp = {
         this.state.questionTimerId = setInterval(() => {
             timeLeft--;
             $("#qTimerDisplay").text("⏱ " + timeLeft + "s");
+            if(timeLeft == 5) {
+                this.playSound('count5s');
+            }
             if (timeLeft <= 0) {
                 clearInterval(this.state.questionTimerId);
                 $("#qTimerDisplay").text("Hết giờ!");
@@ -518,18 +776,23 @@ const DuckRaceApp = {
     },
     handleAnswerResult: function(isCorrect, name) {
         if (isCorrect) {
-            this.playSound('correct');
             if (!this.state.scores[name]) this.state.scores[name] = 0;
             this.state.scores[name] += 10;
             this.saveStorage();
             this.updateWinnerListUI();
             this.showNextQuestion();
         } else {
-            this.playSound('wrong');
-            if (this.state.eliminateOnWrong) { alert(`🚫 ${name} bị loại khỏi lượt hỏi!`); this.closeQuestion(); } else { this.showNextQuestion(); }
+            if (this.state.eliminateOnWrong) {
+                this.playSound('wrong')
+                alert(`🚫 ${name} bị loại khỏi lượt hỏi!`);
+                this.closeQuestion();
+            } else { this.showNextQuestion(); }
         }
     },
-    closeQuestion: function() { this.el.questionArea.hide(); clearInterval(this.state.questionTimerId); },
+    closeQuestion: function() {
+        this.stopSound('count5s');
+        this.el.questionArea.hide(); clearInterval(this.state.questionTimerId);
+    },
     resetQuestionState: function() { if(this.el.questionArea) this.el.questionArea.hide(); },
 
     bindEvents: function() {
@@ -544,7 +807,11 @@ const DuckRaceApp = {
             }
         });
         this.el.menuBtn.click(() => this.el.winnerMenu.addClass("show"));
-        this.el.closeMenuBtn.click(() => this.el.winnerMenu.removeClass("show"));
+        this.el.closeMenuBtn.click(() => {
+            this.el.winnerMenu.removeClass("show");
+            this.playSound('click');
+            this.setupRace();
+        });
         this.el.toggleMusicBtn.click(function() {
             if (self.state.isPlayingMusic) { self.audio.bgm.pause(); $(this).text("🔊 Bật nhạc"); } else { self.audio.bgm.play(); $(this).text("⏸ Tạm dừng"); }
             self.state.isPlayingMusic = !self.state.isPlayingMusic;
