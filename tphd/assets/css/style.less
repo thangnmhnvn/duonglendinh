@@ -1,0 +1,479 @@
+:root {
+
+}
+body {
+  background: url(../images/bg.jpg);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.game-screen {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.game-logo () {
+  position: relative;
+  width: @logoSize;
+  height: @logoSize;
+  display: block;
+  background: url(../images/logo-tphd.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+  margin-bottom: 50px;
+  &:before {
+    content: '';
+    display: block;
+    width: @logoLightSize;
+    height: @logoLightSize;
+    background: url(../images/light2.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: absolute;
+    left: ((@logoSize - @logoLightSize)/2);
+    top: ((@logoSize - @logoLightSize)/2);
+    z-index: -1;
+    animation: spin 10s linear infinite;
+    transform-origin: center;
+  }
+}
+#screen_welcome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  @logoSize: 400px;
+  @logoLightSize: @logoSize * (4/3);
+  .game-logo {
+    .game-logo();
+  }
+}
+
+
+
+
+/* Container để tạo hiệu ứng bóng đổ (drop-shadow) cho toàn bộ nút */
+.button-wrapper {
+  display: inline-block;
+  filter: drop-shadow(0px 6px 4px rgba(0, 0, 0, 0.4));
+}
+
+/* Lớp viền màu vàng bên ngoài */
+.btn-border {
+  background: linear-gradient(to bottom, #FFEB3B, #E69A00); /* Gradient vàng sáng đến vàng sậm */
+  padding: 5px; /* Độ dày của viền */
+  border: none;
+  outline: none;
+  /* Cắt góc 2 bên tạo hình lục giác dài */
+  clip-path: polygon(25px 0, calc(100% - 25px) 0, 100% 50%, calc(100% - 25px) 100%, 25px 100%, 0% 50%);
+  cursor: pointer;
+  transition: transform 0.1s ease-in-out;
+}
+
+/* Hiệu ứng khi bấm vào nút */
+.btn-border:active {
+  transform: translateY(3px);
+}
+
+/* Lớp màu cam bên trong */
+.btn-inner {
+  background: linear-gradient(to bottom, #FF9C1A, #DD5800); /* Gradient cam sáng đến cam đỏ */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 40px;
+  /* Cắt góc tương tự viền ngoài nhưng offset nhỏ hơn một chút để đều viền */
+  clip-path: polygon(22px 0, calc(100% - 22px) 0, 100% 50%, calc(100% - 22px) 100%, 22px 100%, 0% 50%);
+  color: #FFFFFF;
+  font-size: 26px;
+  font-weight: 900;
+  text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.2); /* Đổ bóng nhẹ cho chữ */
+}
+
+/* Biểu tượng nút Play (Hình tam giác) */
+.play-icon {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-top: 12px solid transparent;
+  border-bottom: 12px solid transparent;
+  border-left: 20px solid #FFF59D; /* Màu vàng nhạt của nút play */
+  margin-right: 15px; /* Khoảng cách giữa icon và chữ */
+  filter: drop-shadow(1px 1px 1px rgba(0,0,0,0.2));
+}
+
+
+.col-player {
+  background: rgba(0,0,0,0.5);
+  border-right: 3px double rgba(255,255,255,0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 320px;
+  padding: 0 10px;
+}
+.col-questions {
+  width: 320px;
+  background: rgba(0,0,0,0.5);
+  border-left: 3px double rgba(255,255,255,0.4);
+}
+.col-gameplay {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  .game-logo {
+    @logoSize: 300px;
+    @logoLightSize: @logoSize * (4/3);
+    .game-logo();
+    margin: 0 auto;
+  }
+}
+#player_list {
+  padding: 10px 0;
+  .player {
+    color: #f47a06;
+    padding: 5px 10px;
+    font-size: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    span {
+      float: right;
+    }
+    &:hover,
+    &.active {
+      color: #fff;
+    }
+  }
+}
+.button-actions {
+  padding: 20px 0;
+  .btn-inner {
+    font-size: 20px;
+    padding: 5px 25px;
+  }
+}
+
+#questions_area {
+
+}
+
+// --- BIẾN (VARIABLES) ---
+@tree-width: 260px;
+@hexagon-offset: 15px;
+@inner-padding: 7px 0;
+
+// Màu sắc cho mốc quan trọng (Milestone - 5, 10, 15)
+@color-milestone-border: #2864ff;
+@color-milestone-bg: linear-gradient(to bottom, #062b8a 0%, #010a30 50%, #062b8a 100%);
+
+// Màu sắc cho mốc bình thường (Normal)
+@color-normal-border: #002ba1;
+@color-normal-bg: linear-gradient(to bottom, #8ce0ff 0%, #35b6ff 45%, #259ff9 55%, #7bd7ff 100%);
+
+// Màu sắc cho mốc khởi động (Warm - 1, 2, 3, 4)
+@color-warm-border: #ffcc00;
+@color-warm-bg: linear-gradient(to bottom, #ffc533 0%, #de7200 45%, #c25f00 55%, #ffa600 100%);
+
+// --- MIXIN (Dùng để tái sử dụng hình dáng lục giác) ---
+.hexagon-clip(@offset) {
+  clip-path: polygon(
+          @offset 0%,
+          calc(100% - @offset) 0%,
+          100% 50%,
+          calc(100% - @offset) 100%,
+          @offset 100%,
+          0% 50%
+  );
+}
+
+// --- STYLES ---
+.money-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: @tree-width;
+
+  .mt-level {
+    padding: 2px; // Độ dày viền
+    .hexagon-clip(@hexagon-offset);
+
+    .mt-level-inner {
+      padding: @inner-padding;
+      padding-left: 40px;
+      font-weight: bold;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+      .hexagon-clip(@hexagon-offset - 1px);
+    }
+
+    // Mixin hoặc lồng class để đổ màu
+    &.mt-milestone {
+      background-color: @color-milestone-border;
+      .mt-level-inner {
+        background: @color-milestone-bg;
+        color: #ffffff;
+        text-shadow: 1px 1px 2px #000;
+      }
+    }
+
+    &.mt-normal {
+      background-color: @color-normal-border;
+      .mt-level-inner {
+        background: @color-normal-bg;
+        color: #001233;
+      }
+    }
+
+    &.mt-warm {
+      background-color: @color-warm-border;
+      .mt-level-inner {
+        background: @color-warm-bg;
+        color: #ffffff;
+        text-shadow: 1px 1px 2px #000;
+      }
+    }
+  }
+}
+
+
+// --- BIẾN (VARIABLES) ---
+@border-color: #ffffff;
+@border-width: 3px;
+@point-offset: 40px; // Độ dài của phần góc nhọn
+@gap-between: 10px; // Khoảng cách giữa 2 đáp án
+
+// Phối màu nền (Gradient)
+@qa-gradient: linear-gradient(to bottom, #001f70 0%, #0036a3 50%, #001f70 100%);
+
+// --- MIXIN TẠO HÌNH ---
+.hexagon-clip(@offset) {
+  clip-path: polygon(
+          @offset 0%,
+          calc(100% - @offset) 0%,
+          100% 50%,
+          calc(100% - @offset) 100%,
+          @offset 100%,
+          0% 50%
+  );
+}
+
+// --- STYLES ---
+.qa-wrapper {
+  padding: 40px 20px;
+  overflow: hidden; // Ngăn đường kẻ ngang trôi ra ngoài màn hình
+}
+
+.qa-container {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; // Khoảng cách giữa các hàng dọc
+}
+
+.qa-row {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: @gap-between;
+  width: 100%;
+
+  // Đường kẻ trắng chạy ngang qua giữa các khung
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -50vw; // Kéo dài ra vô tận sang hai bên
+    right: -50vw;
+    height: 2px; // Độ dày đường kẻ nối
+    background-color: @border-color;
+    z-index: 1;
+    transform: translateY(-50%);
+  }
+}
+
+// Khung ngoài (Tạo viền trắng)
+.qa-box-outer {
+  position: relative;
+  z-index: 2; // Nổi lên trên đường kẻ ngang
+  background-color: @border-color;
+  padding: @border-width; // Tạo độ dày cho viền
+  .hexagon-clip(@point-offset);
+  display: flex;
+
+  &.qa-question {
+    width: 100%; // Khung câu hỏi chiếm 100% chiều ngang
+    min-height: 80px;
+  }
+
+  &.qa-answer {
+    flex: 1; // Khung đáp án chia đều 50/50
+    min-height: 60px;
+  }
+}
+
+// Khung trong (Chứa nội dung & nền xanh)
+.qa-box-inner {
+  background: @qa-gradient;
+  width: 100%;
+  height: 100%;
+  .hexagon-clip(@point-offset - 1px); // Giảm một chút offset để viền đều hơn
+  display: flex;
+  align-items: center;
+  padding: 10px 50px;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+
+  .qa-question & {
+    justify-content: center;
+    text-align: center;
+    font-size: 20px;
+  }
+
+  .qa-answer & {
+    justify-content: flex-start;
+  }
+}
+
+
+
+// --- BIẾN (VARIABLES) ---
+@line-color: #8195a8; // Màu đường kẻ ngang và viền khung mỏng
+@btn-border-color: #ffffff; // Viền trắng của các nút trợ giúp
+@box-point-offset: 30px; // Độ nhọn của khung
+
+// Nền của nút (Gradient xanh và xám)
+@blue-gradient: radial-gradient(ellipse at center, #1b63da 0%, #002ba1 100%);
+@grey-gradient: radial-gradient(ellipse at center, #555555 0%, #222222 100%);
+
+// --- MIXIN TẠO HÌNH ---
+.hexagon-clip(@offset) {
+  clip-path: polygon(
+          @offset 0%,
+          calc(100% - @offset) 0%,
+          100% 50%,
+          calc(100% - @offset) 100%,
+          @offset 100%,
+          0% 50%
+  );
+}
+
+// --- STYLES ---
+.lifelines-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 20px;
+  overflow: hidden;
+  min-height: 123px;
+
+  // Đường kẻ chạy ngang qua giữa khung
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -50vw;
+    right: -50vw;
+    height: 1px; // Đường kẻ mảnh hơn so với khung câu hỏi
+    background-color: @line-color;
+    z-index: 1;
+    transform: translateY(-50%);
+  }
+}
+
+// Khung ngoài cùng (Tạo viền mảnh màu xám xanh)
+.lifeline-box-outer {
+  position: relative;
+  z-index: 2;
+  background-color: @line-color;
+  padding: 1.5px; // Độ dày của viền khung
+  .hexagon-clip(@box-point-offset);
+  width: 100%;
+  max-width: 500px; // Khung này ngắn hơn khung câu hỏi
+}
+
+// Khung bên trong (Nền đen sẫm)
+.lifeline-box-inner {
+  background-color: #030a17; // Màu nền cực tối
+  .hexagon-clip(@box-point-offset - 1px);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 15px 45px;
+}
+
+// --- STYLES CHO CÁC NÚT BẦU DỤC ---
+.lifeline-btn {
+  position: relative;
+  width: 80px;
+  height: 50px; // Kích thước Width > Height sẽ tạo hình bầu dục (oval)
+  background-color: @btn-border-color;
+  border-radius: 50%; // Bo tròn tối đa
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3px; // Độ dày của viền trắng
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5); // Đổ bóng nhẹ
+  cursor: pointer;
+
+  .btn-inner {
+    width: 100%;
+    height: 100%;
+    background: @blue-gradient;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 22px; // Kích thước icon
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6); // Đổ bóng bên trong tạo độ sâu
+  }
+
+  // Nút màu xám (Dành cho quyền trợ giúp chuyên gia)
+  &.grey {
+    .btn-inner {
+      background: @grey-gradient;
+    }
+  }
+
+  // Trạng thái đã sử dụng (Dấu X màu đỏ đè lên)
+  &.used {
+    &::before, &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 10%; // Khoảng cách hai bên của chữ X
+      width: 80%; // Độ dài thanh X
+      height: 4px; // Độ dày thanh X
+      background-color: #d10000; // Màu đỏ chuẩn
+      border: 1px solid #ffffff; // Viền trắng mảnh quanh dấu X
+      z-index: 5;
+      box-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+    }
+
+    &::before {
+      transform: translateY(-50%) rotate(25deg);
+    }
+
+    &::after {
+      transform: translateY(-50%) rotate(-25deg);
+    }
+
+    // Làm tối màu icon bên dưới một chút khi đã dùng
+    .btn-inner {
+      filter: brightness(0.8);
+    }
+  }
+}
