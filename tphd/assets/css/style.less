@@ -1,6 +1,17 @@
 :root {
 
 }
+
+.animation-infinite {
+  -vendor-animation-iteration-count: infinite;
+  animation-iteration-count: infinite; // Default
+}
+.animate__animated.animate__delay-1s {
+  -webkit-animation-delay: 1s;
+  animation-delay: 1s;
+  -webkit-animation-delay: calc(var(--animate-delay)*1);
+  animation-delay: calc(var(--animate-delay)*1);
+}
 body {
   background: url(../images/bg.jpg);
   background-size: cover;
@@ -54,8 +65,26 @@ body {
   }
 }
 
+#leaderboard_btn {
+  width: 220px;
+  height: 180px;
+  background: url("../images/score.png");
+  position: absolute;
+  left: 30px;
+  top: 50px;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  cursor: pointer;
+}
 
 
+#backWelcomeBtn {
+  color: #ddd;
+  font-weight: 500;
+  font-size: 18px;
+  cursor: pointer;
+}
 
 /* Container để tạo hiệu ứng bóng đổ (drop-shadow) cho toàn bộ nút */
 .button-wrapper {
@@ -109,18 +138,17 @@ body {
 
 
 .col-player {
-  background: rgba(0,0,0,0.5);
-  border-right: 3px double rgba(255,255,255,0.4);
+  background: rgba(0,0,0,0.2);
+  border-right: 2px solid rgba(255,255,255,0.2);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   width: 320px;
-  padding: 0 10px;
 }
 .col-questions {
   width: 320px;
-  background: rgba(0,0,0,0.5);
-  border-left: 3px double rgba(255,255,255,0.4);
+  background: rgba(0,0,0,0.2);
+  border-left: 2px solid rgba(255,255,255,0.2);
 }
 .col-gameplay {
   flex-grow: 1;
@@ -135,11 +163,13 @@ body {
   }
 }
 #player_list {
-  padding: 10px 0;
+  border-top: 1px solid rgba(255,255,255,0.2);
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+  padding: 15px;
   .player {
     color: #f47a06;
-    padding: 5px 10px;
-    font-size: 20px;
+    padding: 3px 0;
+    font-size: 18px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;
@@ -153,10 +183,11 @@ body {
   }
 }
 .button-actions {
-  padding: 20px 0;
+  padding: 15px;
   .btn-inner {
     font-size: 20px;
     padding: 5px 25px;
+    font-weight: 600;
   }
 }
 
@@ -239,9 +270,58 @@ body {
         text-shadow: 1px 1px 2px #000;
       }
     }
+    &.current-level {
+      background-color: @color-warm-border;
+      .mt-level-inner {
+        background: @color-warm-bg;
+        color: #ffffff;
+        text-shadow: 1px 1px 2px #000;
+      }
+      & ~ .mt-level {
+        background-color: @color-warm-border;
+        .mt-level-inner {
+          background: @color-warm-bg;
+          color: #ffffff;
+          text-shadow: 1px 1px 2px #000;
+        }
+      }
+    }
   }
 }
+/* Trạng thái tương tác của đáp án */
+.ans-btn {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.ans-btn:hover {
+  transform: scale(1.02);
+}
+.ans-btn.selected .qa-box-inner {
+  background: linear-gradient(to bottom, #ffcc00 0%, #ff9900 100%);
+  color: #000;
+}
+.ans-btn.correct .qa-box-inner {
+  background: linear-gradient(to bottom, #28a745 0%, #1e7e34 100%);
+  color: #fff;
+  animation: flash-correct 0.5s ease-in-out 3;
+}
+.ans-btn.wrong .qa-box-inner {
+  background: linear-gradient(to bottom, #dc3545 0%, #c82333 100%);
+  color: #fff;
+}
 
+/* Nháy sáng cho đáp án đúng */
+@keyframes flash-correct {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.5); }
+}
+
+/* Thể hiện mốc câu hỏi hiện tại đang đứng */
+.mt-level.current-level {
+  border: 2px solid #fff;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
 
 // --- BIẾN (VARIABLES) ---
 @border-color: #ffffff;
@@ -476,4 +556,86 @@ body {
       filter: brightness(0.8);
     }
   }
+}
+/* Style cơ bản cho nút */
+.music-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+/* Màu cam khi đang BẬT (Trạng thái mặc định) */
+.music-toggle svg {
+  width: 50px;
+  height: 50px;
+  color: #ff8800; /* Màu cam chủ đạo */
+  transition: color 0.3s ease;
+}
+
+/* Ẩn đường gạch chéo khi đang bật */
+.music-toggle .slash {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Trạng thái khi TẮT (class .off) */
+.music-toggle.off svg {
+  color: #888888; /* Chuyển sang màu xám */
+}
+
+/* Hiện đường gạch chéo khi tắt */
+.music-toggle.off .slash {
+  opacity: 1;
+}
+
+/* Hiệu ứng hover cho chuyên nghiệp */
+.music-toggle:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+.settings-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  outline: none;
+  transition: transform 0.3s ease;
+}
+
+.settings-btn svg {
+  width: 50px;
+  height: 50px;
+  color: #ff8800; /* Màu cam chủ đạo */
+  transition: transform 0.6s ease, filter 0.3s ease;
+  /* Quan trọng: Đặt tâm xoay là chính giữa */
+  transform-origin: center center;
+}
+
+/* Hiệu ứng xoay bánh răng ĐÃ CHUẨN khi di chuột vào */
+.settings-btn:hover svg {
+  transform: rotate(180deg); /* Xoay 180 độ cho rõ ràng */
+  filter: brightness(1.1);
+}
+
+/* Hiệu ứng thu phóng nhẹ khi nhấn */
+.settings-btn:active {
+  transform: scale(0.9);
+}
+.timer-container {
+  top: 20px;
+  right: 20px;
+  z-index: 3;
+}
+#countdown-timer {
+  width: 80px;
+  height: 80px;
+  font-size: 36px;
+  background: radial-gradient(circle, #001f70, #000);
+  border: 4px solid #FFEB3B;
+  color: #FFEB3B;
+  transition: color 0.3s, border-color 0.3s;
+  font-family: monospace;
 }

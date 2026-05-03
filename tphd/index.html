@@ -6,15 +6,36 @@
     <title>Triệu phú học đường</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="assets/css/animate.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/script.js"></script>
 </head>
 <body>
+
 <div id="screen_welcome" class="game-screen">
+    <div style="position: absolute; top: 30px; right: 30px; z-index: 100;">
+        <button class="music-toggle off" id="musicBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18V5l12-2v13"></path>
+                <circle cx="6" cy="18" r="3"></circle>
+                <circle cx="18" cy="16" r="3"></circle>
+
+                <line class="slash" x1="3" y1="3" x2="21" y2="21"></line>
+            </svg>
+        </button>
+        <button class="settings-btn" id="btnSettings" title="&#9881; Cài đặt trò chơi">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                <path d="M96.1,43.2l-9.1-2.2a38.4,38.4,0,0,0-4-9.6l5.7-7.7a2,2,0,0,0-.2-2.7L81.1,13.6a2,2,0,0,0-2.7-.2L70.7,19a38.4,38.4,0,0,0-9.6-4L58.9,5.9a2,2,0,0,0-2-.1L43.2,3.9a2,2,0,0,0-2,.1L39,15a38.4,38.4,0,0,0-9.6,4L21.7,13.3a2,2,0,0,0-2.7.2L11.6,20.7a2,2,0,0,0-.2,2.7l5.7,7.7a38.4,38.4,0,0,0-4,9.6L3.9,41.1a2,2,0,0,0-.1,2L5.9,56.8a2,2,0,0,0,.1,2l9.1,2.2a38.4,38.4,0,0,0,4,9.6l-5.7,7.7a2,2,0,0,0,.2,2.7l7.4,7.4a2,2,0,0,0,2.7.2L30.7,81a38.4,38.4,0,0,0,9.6,4l2.2,9.1a2,2,0,0,0,2,1.9h7.4a2,2,0,0,0,2-1.9l2.2-9.1a38.4,38.4,0,0,0,9.6-4l7.7,5.7a2,2,0,0,0,2.7-.2l7.4-7.4a2,2,0,0,0,.2-2.7L81,69.3a38.4,38.4,0,0,0,4-9.6l9.1-2.2a2,2,0,0,0,1.9-2V45.2A2,2,0,0,0,96.1,43.2ZM50,67.5A17.5,17.5,0,1,1,67.5,50,17.5,17.5,0,0,1,50,67.5Z"/>
+            </svg>
+        </button>
+    </div>
+
     <span class="game-logo"></span>
+
     <div class="text-center">
-        <div id="startBtn" class="button-wrapper">
+        <div id="startBtn" class="button-wrapper animate__animated animate__pulse animation-infinite">
             <div class="btn-border">
                 <span class="btn-inner">
                     <span class="play-icon"></span>
@@ -23,12 +44,19 @@
             </div>
         </div>
     </div>
+
+    <div id="leaderboard_btn" class="animate__animated animate__swing"></div>
 </div>
 
 <div id="screen_gameplay" class="game-screen">
     <div class="wrapper h-100">
         <div class="d-flex h-100">
             <div class="h-100 col-player">
+                <div class="button-actions">
+                    <div id="backWelcomeBtn">
+                        &larr; Về trang chủ
+                    </div>
+                </div>
                 <div id="player_list" class="overflow-auto">
                 </div>
                 <div class="button-actions">
@@ -43,77 +71,62 @@
                     </div>
                 </div>
             </div>
-            <div class="h-100 col-gameplay grow-1">
-
+            <div class="h-100 col-gameplay grow-1 position-relative">
+                <div class="timer-container text-center position-absolute">
+                    <div id="countdown-timer" class="rounded-circle d-inline-flex justify-content-center align-items-center fw-bold shadow-lg"></div>
+                </div>
                 <div class="lifelines-wrapper">
                     <div class="lifeline-box-outer">
                         <div class="lifeline-box-inner">
-
-                            <div class="lifeline-btn used">
-                                <div class="btn-inner">
-                                    <span class="ll-icon" style="font-size: 16px;">50:50</span>
-                                </div>
+                            <div class="lifeline-btn animate__animated animate__heartBeat" id="ll-5050" title="Trợ giúp 50:50">
+                                <div class="btn-inner"><span class="ll-icon" style="font-size: 16px;">50:50</span></div>
                             </div>
-
-                            <div class="lifeline-btn">
-                                <div class="btn-inner">
-                                    <span class="ll-icon">&#9742;</span> </div>
+                            <div class="lifeline-btn animate__animated animate__heartBeat animate__delay-1s" id="ll-teacher" title="Hỏi ý kiến giáo viên">
+                                <div class="btn-inner"><span class="ll-icon">&#128100;</span> </div>
                             </div>
-
-                            <div class="lifeline-btn">
-                                <div class="btn-inner">
-                                    <span class="ll-icon">&#128101;</span> </div>
+                            <div class="lifeline-btn animate__animated animate__heartBeat animate__delay-2s" id="ll-audience" title="Hỏi ý kiến các bạn">
+                                <div class="btn-inner"><span class="ll-icon">&#128101;</span> </div>
                             </div>
-
-                            <div class="lifeline-btn grey">
-                                <div class="btn-inner">
-                                    <span class="ll-icon" style="font-size: 14px;">$ &#128100; ?</span>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
 
-                <div>
+                <div class="game-main position-relative">
                     <span class="game-logo"></span>
                 </div>
-
 
                 <div class="qa-wrapper">
                     <div class="qa-container">
                         <div class="qa-row">
                             <div class="qa-box-outer qa-question">
-                                <div class="qa-box-inner">
-                                    Nội dung câu hỏi của chương trình sẽ được hiển thị ở đây...
+                                <div class="qa-box-inner" id="question_content">
+                                    Vui lòng chọn người chơi từ danh sách hoặc nút Chọn người may mắn.
                                 </div>
                             </div>
                         </div>
 
                         <div class="qa-row">
-                            <div class="qa-box-outer qa-answer">
-                                <div class="qa-box-inner">
-                                    A. Đáp án thứ nhất
-                                </div>
+                            <div class="qa-box-outer qa-answer ans-btn" data-idx="0">
+                                <div class="qa-box-inner" id="ans_0">A. Đáp án thứ nhất</div>
                             </div>
-                            <div class="qa-box-outer qa-answer">
-                                <div class="qa-box-inner">
-                                    B. Đáp án thứ hai
-                                </div>
+                            <div class="qa-box-outer qa-answer ans-btn" data-idx="1">
+                                <div class="qa-box-inner" id="ans_1">B. Đáp án thứ hai</div>
                             </div>
                         </div>
 
                         <div class="qa-row">
-                            <div class="qa-box-outer qa-answer">
-                                <div class="qa-box-inner">
-                                    C. Đáp án thứ ba
-                                </div>
+                            <div class="qa-box-outer qa-answer ans-btn" data-idx="2">
+                                <div class="qa-box-inner" id="ans_2">C. Đáp án thứ ba</div>
                             </div>
-                            <div class="qa-box-outer qa-answer">
-                                <div class="qa-box-inner">
-                                    D. Đáp án thứ tư
-                                </div>
+                            <div class="qa-box-outer qa-answer ans-btn" data-idx="3">
+                                <div class="qa-box-inner" id="ans_3">D. Đáp án thứ tư</div>
                             </div>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <button type="button" id="stopGameBtn" class="btn btn-outline-warning px-4 py-2" style="border-radius: 20px; display: none;">
+                                Dừng cuộc chơi & Bảo toàn tiền thưởng
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -121,26 +134,159 @@
             </div>
             <div class="h-100 col-questions d-flex justify-content-center align-items-center">
                 <div id="questions_area" class="money-tree">
-                    <div class="question mt-level mt-milestone"><div class="mt-level-inner">15 &bull; $1,000,000</div></div>
-                    <div class="question mt-level mt-normal"><div class="mt-level-inner">14 &bull; $500,000</div></div>
-                    <div class="question mt-level mt-normal"><div class="mt-level-inner">13 &bull; $250,000</div></div>
-                    <div class="question mt-level mt-normal"><div class="mt-level-inner">12 &bull; $100,000</div></div>
-                    <div class="question mt-level mt-normal"><div class="mt-level-inner">11 &bull; $50,000</div></div>
-                    <div class="question mt-level mt-milestone"><div class="mt-level-inner">10 &bull; $25,000</div></div>
-                    <div class="question mt-level mt-normal"><div class="mt-level-inner">9 &bull; $15,000</div></div>
-                    <div class="question mt-level mt-normal"><div class="mt-level-inner">8 &bull; $10,000</div></div>
-                    <div class="question mt-level mt-normal"><div class="mt-level-inner">7 &bull; $7,000</div></div>
-                    <div class="question mt-level mt-normal"><div class="mt-level-inner">6 &bull; $5,000</div></div>
-                    <div class="question mt-level mt-milestone"><div class="mt-level-inner">5 &bull; $3,000</div></div>
-                    <div class="question mt-level mt-warm"><div class="mt-level-inner">4 &bull; $2,000</div></div>
-                    <div class="question mt-level mt-warm"><div class="mt-level-inner">3 &bull; $1,000</div></div>
-                    <div class="question mt-level mt-warm"><div class="mt-level-inner">2 &bull; $500</div></div>
-                    <div class="question mt-level mt-warm"><div class="mt-level-inner">1 &bull; $100</div></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark" style="border: 3px solid #ffc107;">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title fw-bold">⚙️ CÀI ĐẶT TRÒ CHƠI</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-primary">📑 Số câu hỏi mỗi lượt chơi:</label>
+                    <select id="settingQuestionCount" class="form-select shadow-sm" style="border-color: #001f70;">
+                        <option value="5">5 câu hỏi</option>
+                        <option value="10">10 câu hỏi</option>
+                        <option value="15" selected>15 câu hỏi (Tiêu chuẩn)</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-primary">⏳ Thời gian trả lời (giây):</label>
+                    <input type="number" id="settingTimeLimit" class="form-control shadow-sm" style="border-color: #001f70;" min="5" max="300" value="60">
+                </div>
+                <div class="form-check form-switch mb-4">
+                    <input class="form-check-input shadow-sm" type="checkbox" id="settingShuffle" style="transform: scale(1.3); margin-right: 10px;">
+                    <label class="form-check-label fw-bold text-primary pt-1" for="settingShuffle">🔀 Xáo trộn câu trả lời (A, B, C, D)</label>
+                </div>
+                <div class="form-check form-switch mb-3">
+                    <input class="form-check-input shadow-sm" type="checkbox" id="settingAllowPlayed" style="transform: scale(1.3); margin-right: 10px;" checked>
+                    <label class="form-check-label fw-bold text-primary pt-1" for="settingAllowPlayed">🎲 Nút Ngẫu nhiên chọn cả người đã chơi rồi</label>
+                </div>
+            </div>
+            <div class="modal-footer justify-content-between border-top-0">
+                <button type="button" id="resetGameBtn" class="btn btn-danger px-4 py-2 fw-bold rounded-pill shadow-sm">Làm mới Game</button>
+                <button type="button" id="saveSettingsBtn" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow-sm">Lưu Cài Đặt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmBackModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark" style="border: 3px solid #dc3545; background: #ffffff;">
+            <div class="modal-body text-center p-4">
+                <h4 class="text-danger mb-3">XÁC NHẬN VỀ TRANG CHỦ</h4>
+                <p class="mb-4">Lượt chơi của bạn đang diễn ra. Nếu về trang chủ lúc này, <strong>kết quả hiện tại sẽ không được lưu</strong>.<br>Bạn có chắc chắn muốn thoát?</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal">Tiếp tục chơi</button>
+                    <button type="button" id="confirmBackBtn" class="btn btn-danger px-4 py-2">Đồng ý Thoát</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="playerReadyModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark" style="border: 3px solid #FFEB3B; background: linear-gradient(to bottom, #001f70, #0036a3);">
+            <div class="modal-body text-center p-5">
+                <h2 class="text-white mb-4">CHÚC MỪNG!</h2>
+                <div class="mb-4"><img src="assets/images/score.png" alt="Trophy" style="width: 120px;"></div>
+                <h4 class="text-warning mb-4">Người chơi: <span id="readyPlayerName" class="text-white">...</span></h4>
+                <p class="text-white-50">Bạn đã sẵn sàng để chinh phục các câu hỏi của chương trình chưa?</p>
+                <div class="mt-4">
+                    <button type="button" id="confirmReadyBtn" class="btn-border" style="display: inline-block;">
+                        <span class="btn-inner" style="font-size: 20px; padding: 10px 30px;">Sẵn sàng chơi</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmChangeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark" style="border: 3px solid #dc3545; background: #ffffff;">
+            <div class="modal-body text-center p-4">
+                <h4 class="text-danger mb-3">XÁC NHẬN DỪNG CHƠI</h4>
+                <p class="mb-2">Người chơi <strong id="currentPlayingName" class="text-primary fs-5"></strong> đang trong lượt chơi.</p>
+                <p class="text-muted mb-4">Bạn có chắc muốn hủy kết quả để đổi lượt cho người mới?</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="button" id="confirmChangeBtn" class="btn btn-danger px-4 py-2">Đồng ý dừng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmStopModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark" style="border: 3px solid #ffc107; background: #ffffff;">
+            <div class="modal-body text-center p-4">
+                <h4 class="text-warning mb-3">XÁC NHẬN BẢO TOÀN</h4>
+                <p class="mb-4">Bạn có chắc chắn muốn dừng cuộc chơi lúc này để bảo toàn số tiền thưởng hiện tại không?</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal">Tiếp tục chơi</button>
+                    <button type="button" id="confirmStopBtn" class="btn btn-warning px-4 py-2 text-dark fw-bold">Đồng ý bảo toàn</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="lifelineModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark" style="border: 3px solid #17a2b8; background: #ffffff;">
+            <div class="modal-body text-center p-4">
+                <h4 class="text-info mb-3 fw-bold" id="lifelineModalTitle">TRỢ GIÚP</h4>
+                <p class="mb-4 fs-5" id="lifelineModalBody"></p>
+                <button type="button" class="btn btn-info px-5 py-2 text-white fw-bold shadow-sm" data-bs-dismiss="modal">Đã xong & Tiếp tục</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="alertModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark" style="border: 3px solid #001f70; background: #ffffff;">
+            <div class="modal-body text-center p-4">
+                <h3 class="text-primary mb-3 fw-bold">THÔNG BÁO</h3>
+                <p id="alertMessage" class="mb-4 fs-5"></p>
+                <button type="button" class="btn btn-primary px-5 py-2 fw-bold" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="leaderboardModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark" style="border: 3px solid #ffc107;">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title fw-bold">🏆 Bảng xếp hạng </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <ul id="leaderboardList"></ul>
+            </div>
+            <div class="modal-footer justify-content-between border-top-0">
+                <button type="button" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow-sm mx-auto" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+<audio id="bg-music-player">
+    <source src="" type="audio/mpeg">
+</audio>
+<audio id="music-player">
+    <source src="" type="audio/mpeg">
+</audio>
 </body>
 </html>
