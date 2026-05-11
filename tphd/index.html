@@ -3,290 +3,254 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Triệu phú học đường</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <title>🎯 Vòng quay Tri Thức</title>
+    <link rel="stylesheet" href="assets/css/bs.css">
     <link rel="stylesheet" href="assets/css/style.css">
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="assets/css/style2.css">
+    <!-- Meta Pixel Code -->
+    <style>
+        #question img {
+            max-width: 100%;
+        }
+    </style>
+        <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+            n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+            if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+            n.queue=[];t=b.createElement(e);t.async=!0;
+            t.src=v;s=b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t,s)}(window, document,'script',
+            'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '1579015629980216');
+        fbq('trackCustom', 'PlayGame', {
+            game: '🎯 Vòng quay Tri Thức'
+        });
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+                   src="https://www.facebook.com/tr?id=1579015629980216&ev=PageView&noscript=1"
+        /></noscript>
+    <!-- End Meta Pixel Code -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                ignoreHtmlClass: 'no-mathjax',
+                processHtmlClass: 'process-mathjax'
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="assets/mathjax/mathjax.js"></script>
+    <script src="assets/js/jquery-3.7.1.min.js"></script>
+    <script src="assets/js/confetti.browser.min.js"></script>
+    <script src="assets/js/lang.js"></script>
     <script src="assets/js/script.js"></script>
+    <script>
+        Object.assign(GameApp, {
+            config: {
+                MAX_ANGULAR_VEL: 0.45,
+                ACCEL_PER_MS: 0.00028,
+                DECAY: 0.985,
+                MIN_SPIN_MS: 5000,
+                CLASS_KEY_PREFIX: "vongquaytracnghiem_",
+                initialData: {
+                    "tenlop": "10A1",
+                    "students": ["Nguy\u1ec5n \u0110\u1ee9c Anh","Nguy\u1ec5n Tr\u1ecdng Vi\u1ec7t Anh","Ph\u1ea1m Tu\u1ea5n D\u0169ng","Nguy\u1ec5n Vi\u1ec7t Anh","V\u0169 Duy B\u00e1ch","L\u00ea Minh \u0110\u1ee9c","Ph\u00f9ng Ng\u1ecdc Minh Giang","B\u00f9i \u0110\u00e0m Gia Kh\u00e1nh","Nguy\u1ec5n Duy Khoa","Ph\u00f9ng Trung Ki\u00ean","\u0110inh Ph\u00fa L\u00e2m","Ng\u00f4 Gia Huy","Phan Nh\u1eadt Minh","Ph\u1ea1m Trung Nguy\u00ean","Phan Th\u1ecb M\u1ef9 Ng\u1ecdc","Ph\u00f9ng Ho\u00e0ng Nam","\u0110\u1eb7ng Gia Minh","Ph\u1ea1m B\u1ea3o Nam","Ki\u1ec1u Anh Tu\u1ea5n","T\u00f4 H\u1ea3i S\u01a1n","Nguy\u1ec5n Ph\u01b0\u01a1ng Th\u1ea3o","\u0110\u1eb7ng H\u1ed3ng Th\u00e1i","Tr\u1ea7n Ho\u00e0ng Anh Tu\u1ea5n","Ho\u00e0ng Ti\u1ebfn Nam","Nguy\u1ec5n Ph\u00fa Tr\u1ecdng","\u0110inh Quang Tr\u01b0\u1eddng","Ho\u00e0ng Ng\u1ecdc V\u0169","Nguy\u1ec5n Th\u00e0nh Khang Duy","L\u00ea Xu\u00e2n Nam Kh\u00e1nh"],
+                    "questions": [{"q":"94 - 17 = ?","img":"","opts":["77","80","85","73"],"answer":0},{"q":"26 + 81 = ?","img":"","opts":["115","114","98","107"],"answer":3},{"q":"52 + 9 = ?","img":"","opts":["61","70","57","59"],"answer":0},{"q":"89 - 55 = ?","img":"","opts":["34","30","44","38"],"answer":0},{"q":"82 - 60 = ?","img":"","opts":["21","22","24","26"],"answer":1},{"q":"79 + 58 = ?","img":"","opts":["141","131","137","143"],"answer":2},{"q":"88 - 56 = ?","img":"","opts":["26","23","40","32"],"answer":3},{"q":"88 - 76 = ?","img":"","opts":["12","11","17","4"],"answer":0},{"q":"59 + 70 = ?","img":"","opts":["123","129","121","126"],"answer":1},{"q":"98 + 46 = ?","img":"","opts":["143","144","142","150"],"answer":1},{"q":"72 - 32 = ?","img":"","opts":["42","40","47","50"],"answer":1},{"q":"76 + 87 = ?","img":"","opts":["165","155","171","163"],"answer":3},{"q":"77 - 23 = ?","img":"","opts":["54","57","45","49"],"answer":0},{"q":"32 + 99 = ?","img":"","opts":["131","129","125","128"],"answer":0},{"q":"99 - 69 = ?","img":"","opts":["32","30","28","40"],"answer":1},{"q":"10 + 23 = ?","img":"","opts":["23","37","33","39"],"answer":2},{"q":"84 - 19 = ?","img":"","opts":["64","70","58","65"],"answer":3},{"q":"74 - 39 = ?","img":"","opts":["37","29","34","35"],"answer":3},{"q":"72 - 54 = ?","img":"","opts":["18","28","15","8"],"answer":0},{"q":"88 - 28 = ?","img":"","opts":["61","57","60","59"],"answer":2},{"q":"55 + 15 = ?","img":"","opts":["64","70","71","63"],"answer":1},{"q":"52 + 41 = ?","img":"","opts":["93","83","87","97"],"answer":0},{"q":"22 + 56 = ?","img":"","opts":["86","78","74","82"],"answer":1},{"q":"71 - 24 = ?","img":"","opts":["45","52","47","41"],"answer":2},{"q":"87 - 33 = ?","img":"","opts":["63","62","64","54"],"answer":3},{"q":"92 - 39 = ?","img":"","opts":["44","46","59","53"],"answer":3},{"q":"84 + 31 = ?","img":"","opts":["107","115","117","113"],"answer":1},{"q":"84 - 44 = ?","img":"","opts":["37","40","49","46"],"answer":1},{"q":"21 + 92 = ?","img":"","opts":["112","113","121","103"],"answer":1},{"q":"44 - 33 = ?","img":"","opts":["11","19","17","1"],"answer":0},{"q":"97 - 78 = ?","img":"","opts":["12","19","10","18"],"answer":1},{"q":"60 - 3 = ?","img":"","opts":["57","51","50","53"],"answer":0},{"q":"39 + 48 = ?","img":"","opts":["92","87","85","77"],"answer":1},{"q":"78 - 41 = ?","img":"","opts":["40","37","32","27"],"answer":1},{"q":"67 + 22 = ?","img":"","opts":["87","89","91","82"],"answer":0},{"q":"96 - 58 = ?","img":"","opts":["41","36","38","48"],"answer":3},{"q":"53 + 26 = ?","img":"","opts":["77","79","72","69"],"answer":0},{"q":"63 - 14 = ?","img":"","opts":["42","49","47","51"],"answer":2},{"q":"48 + 39 = ?","img":"","opts":["91","85","86","88"],"answer":0},{"q":"72 - 18 = ?","img":"","opts":["55","54","52","60"],"answer":1}]                }
+            }
+        });
+
+        $(document).ready(function() {
+            GameApp.init();
+        });
+    </script>
 </head>
 <body>
+<audio id="tickSound" src="assets/sounds/vongquay.mp3" preload="auto"></audio>
+<audio id="winSoundvq" src="assets/sounds/chucmung.mp3" preload="auto"></audio>
+<audio id="correctSound" src="assets/sounds/crrec.mp3" preload="auto"></audio>
+<audio id="wrongSound" src="assets/sounds/wrong.mp3" preload="auto"></audio>
+<audio id="countdownSound" src="assets/sounds/demnguoc.mp3" preload="auto"></audio>
+<audio id="winSound" src="assets/sounds/win.mp3" preload="auto"></audio>
 
-<div id="screen_welcome" class="game-screen">
-    <div style="position: absolute; top: 30px; right: 30px; z-index: 100;">
-        <button class="music-toggle off" id="musicBtn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 18V5l12-2v13"></path>
-                <circle cx="6" cy="18" r="3"></circle>
-                <circle cx="18" cy="16" r="3"></circle>
 
-                <line class="slash" x1="3" y1="3" x2="21" y2="21"></line>
+
+<div id="welcomeScreen">
+    <div id="lang_switch">
+        <label>
+            <input type="radio" name="language" value="en">
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="40" viewBox="0 0 60 40">
+                <defs>
+                    <style>
+                        .blue { fill: #012169; }
+                        .white { stroke: #FFFFFF; stroke-width: 6; }
+                        .red-diag { stroke: #C8102E; stroke-width: 2; }
+                        .red-cross { fill: #C8102E; }
+                        .white-cross { fill: #FFFFFF; }
+                    </style>
+                </defs>
+
+                <rect width="60" height="40" class="blue"/>
+
+                <path d="M-10,-10 L70,50 M70,-10 L-10,50" class="white"/>
+
+                <path d="M-10,50 L70,-10" class="red-diag" transform="translate(0, -2.2)"/>
+
+                <path d="M-10,-10 L70,50" class="red-diag" transform="translate(0, 2.2)"/>
+
+                <rect x="25" y="0" width="10" height="40" class="white-cross"/>
+                <rect x="0" y="15" width="60" height="10" class="white-cross"/>
+
+                <rect x="27" y="0" width="6" height="40" class="red-cross"/>
+                <rect x="0" y="17" width="60" height="6" class="red-cross"/>
             </svg>
-        </button>
-        <button class="settings-btn" id="btnSettings" title="&#9881; Cài đặt trò chơi">
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                <path d="M96.1,43.2l-9.1-2.2a38.4,38.4,0,0,0-4-9.6l5.7-7.7a2,2,0,0,0-.2-2.7L81.1,13.6a2,2,0,0,0-2.7-.2L70.7,19a38.4,38.4,0,0,0-9.6-4L58.9,5.9a2,2,0,0,0-2-.1L43.2,3.9a2,2,0,0,0-2,.1L39,15a38.4,38.4,0,0,0-9.6,4L21.7,13.3a2,2,0,0,0-2.7.2L11.6,20.7a2,2,0,0,0-.2,2.7l5.7,7.7a38.4,38.4,0,0,0-4,9.6L3.9,41.1a2,2,0,0,0-.1,2L5.9,56.8a2,2,0,0,0,.1,2l9.1,2.2a38.4,38.4,0,0,0,4,9.6l-5.7,7.7a2,2,0,0,0,.2,2.7l7.4,7.4a2,2,0,0,0,2.7.2L30.7,81a38.4,38.4,0,0,0,9.6,4l2.2,9.1a2,2,0,0,0,2,1.9h7.4a2,2,0,0,0,2-1.9l2.2-9.1a38.4,38.4,0,0,0,9.6-4l7.7,5.7a2,2,0,0,0,2.7-.2l7.4-7.4a2,2,0,0,0,.2-2.7L81,69.3a38.4,38.4,0,0,0,4-9.6l9.1-2.2a2,2,0,0,0,1.9-2V45.2A2,2,0,0,0,96.1,43.2ZM50,67.5A17.5,17.5,0,1,1,67.5,50,17.5,17.5,0,0,1,50,67.5Z"/>
+        </label>
+        <label>
+            <input type="radio" name="language" value="vi" checked>
+            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="40" viewBox="0 0 60 40">
+                <rect width="60" height="40" fill="#DA251D"/>
+                <polygon fill="#FFFF00" points="30,8 32.694,16.292 41.412,16.292 34.359,21.416 37.053,29.708 30,24.584 22.947,29.708 25.641,21.416 18.588,16.292 27.306,16.292"/>
             </svg>
-        </button>
+        </label>
     </div>
-
-    <span class="game-logo"></span>
-
-    <div class="text-center">
-        <div id="startBtn" class="button-wrapper animate__animated animate__pulse animation-infinite">
-            <div class="btn-border">
-                <span class="btn-inner">
-                    <span class="play-icon"></span>
-                    Bắt đầu ngay
-                </span>
-            </div>
-        </div>
-    </div>
-
-    <div id="leaderboard_btn" class="animate__animated animate__swing"></div>
+    <h1 class="title" data-text="🎯 Vòng quay Tri Thức"></h1>
+    <button id="startBtn" data-text="🚀 Bắt đầu ngay"></button>
 </div>
 
-<div id="screen_gameplay" class="game-screen">
-    <div class="wrapper h-100">
-        <div class="d-flex h-100">
-            <div class="h-100 col-player">
-                <div class="button-actions">
-                    <div id="backWelcomeBtn">
-                        &larr; Về trang chủ
-                    </div>
-                </div>
-                <div id="player_list" class="overflow-auto">
-                </div>
-                <div class="button-actions">
-                    <div class="text-center">
-                        <div id="randPlayerBtn" class="button-wrapper">
-                            <div class="btn-border">
-                                <span class="btn-inner">
-                                    Chọn người may mắn
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="h-100 col-gameplay grow-1 position-relative">
-                <div class="timer-container text-center position-absolute">
-                    <div id="countdown-timer" class="rounded-circle d-inline-flex justify-content-center align-items-center fw-bold shadow-lg"></div>
-                </div>
-                <div class="lifelines-wrapper">
-                    <div class="lifeline-box-outer">
-                        <div class="lifeline-box-inner">
-                            <div class="lifeline-btn animate__animated animate__heartBeat" id="ll-5050" title="Trợ giúp 50:50">
-                                <div class="btn-inner"><span class="ll-icon" style="font-size: 16px;">50:50</span></div>
-                            </div>
-                            <div class="lifeline-btn animate__animated animate__heartBeat animate__delay-1s" id="ll-teacher" title="Hỏi ý kiến giáo viên">
-                                <div class="btn-inner"><span class="ll-icon">&#128100;</span> </div>
-                            </div>
-                            <div class="lifeline-btn animate__animated animate__heartBeat animate__delay-2s" id="ll-audience" title="Hỏi ý kiến các bạn">
-                                <div class="btn-inner"><span class="ll-icon">&#128101;</span> </div>
-                            </div>
-                        </div>
+<button id="btn_save_config" class="config-button mx-2 btn btn-lg rounded-pill fw-bold fs-4 text-white shadow-sm z-3 bg-soft-orange m-0 p-3" onclick="var settings_panel = document.getElementById('settings_panel'); settings_panel.style.display = 'block';">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+    </svg>
+</button>
+<div id="settings_panel" class="settings-panel">
+    <div class="wrapper">
+        <div class="bg-soft-cream rounded-4 p-4 shadow-lg settings-panel-mobile">
+            <div class="fs-5 fw-bold text-secondary">
+                <div class="d-flex mb-3">
+                    <div class="form-check form-switch">
+                        <input type="checkbox" name="che_do" value="Gọi tên không lặp lại" id="che_do_goi_ten" class="chon_chedo form-check-input" role="switch">
+                        <label class="form-check-label" for="che_do_goi_ten" data-text="Gọi tên không lặp lại"></label>
                     </div>
                 </div>
 
-                <div class="game-main position-relative">
-                    <span class="game-logo"></span>
-                </div>
-
-                <div class="qa-wrapper">
-                    <div class="qa-container">
-                        <div class="qa-row">
-                            <div class="qa-box-outer qa-question">
-                                <div class="qa-box-inner" id="question_content">
-                                    Vui lòng chọn người chơi từ danh sách hoặc nút Chọn người may mắn.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="qa-row">
-                            <div class="qa-box-outer qa-answer ans-btn" data-idx="0">
-                                <div class="qa-box-inner" id="ans_0">A. Đáp án thứ nhất</div>
-                            </div>
-                            <div class="qa-box-outer qa-answer ans-btn" data-idx="1">
-                                <div class="qa-box-inner" id="ans_1">B. Đáp án thứ hai</div>
-                            </div>
-                        </div>
-
-                        <div class="qa-row">
-                            <div class="qa-box-outer qa-answer ans-btn" data-idx="2">
-                                <div class="qa-box-inner" id="ans_2">C. Đáp án thứ ba</div>
-                            </div>
-                            <div class="qa-box-outer qa-answer ans-btn" data-idx="3">
-                                <div class="qa-box-inner" id="ans_3">D. Đáp án thứ tư</div>
-                            </div>
-                        </div>
-
-                        <div class="text-center mt-3">
-                            <button type="button" id="stopGameBtn" class="btn btn-outline-warning px-4 py-2" style="border-radius: 20px; display: none;">
-                                Dừng cuộc chơi & Bảo toàn tiền thưởng
-                            </button>
-                        </div>
+                <div class="d-flex mb-3">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" name="random_question" role="switch" id="random_question" value="1" checked="">
+                        <label class="form-check-label" for="random_question" data-text="Trộn ngẫu nhiên câu hỏi và câu trả lời"></label>
                     </div>
                 </div>
 
-            </div>
-            <div class="h-100 col-questions d-flex justify-content-center align-items-center">
-                <div id="questions_area" class="money-tree">
+                <div class="d-flex gap-4 align-items-center flex-wrap mb-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <span data-text="⏳ Thời gian mỗi câu:"></span>
+                        <input type="number" id="timeConfig" value="15" min="5" class="form-control form-control-lg text-center rounded-3 border-soft-orange" style="width: 80px; font-family: inherit;">
+                        s
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span data-text="🔢 Số câu hỏi cho mỗi lượt:"></span>
+                        <input type="number" id="countConfig" value="1" min="1" max="10" class="form-control form-control-lg text-center rounded-3 border-soft-orange" style="width: 80px; font-family: inherit;">
+                    </div>
                 </div>
+
+                <button class="btn rounded-pill px-5 py-1 fw-bold fs-4 text-white shadow-sm z-3 bg-soft-orange float-end" onclick="var settings_panel = document.getElementById('settings_panel'); settings_panel.style.display = 'none';">OK</button>
+                <button id="reset_games" class="btn rounded-pill px-3 py-1 fw-bold fs-4 text-white shadow-sm z-3 bg-soft-red float-end mx-2" data-text="Reset game"></button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-dark" style="border: 3px solid #ffc107;">
-            <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title fw-bold">⚙️ CÀI ĐẶT TRÒ CHƠI</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <div class="mb-4">
-                    <label class="form-label fw-bold text-primary">📑 Số câu hỏi mỗi lượt chơi:</label>
-                    <select id="settingQuestionCount" class="form-select shadow-sm" style="border-color: #001f70;">
-                        <option value="5">5 câu hỏi</option>
-                        <option value="10">10 câu hỏi</option>
-                        <option value="15" selected>15 câu hỏi (Tiêu chuẩn)</option>
-                    </select>
-                </div>
-                <div class="mb-4">
-                    <label class="form-label fw-bold text-primary">⏳ Thời gian trả lời (giây):</label>
-                    <input type="number" id="settingTimeLimit" class="form-control shadow-sm" style="border-color: #001f70;" min="5" max="300" value="60">
-                </div>
-                <div class="form-check form-switch mb-4">
-                    <input class="form-check-input shadow-sm" type="checkbox" id="settingShuffle" style="transform: scale(1.3); margin-right: 10px;">
-                    <label class="form-check-label fw-bold text-primary pt-1" for="settingShuffle">🔀 Xáo trộn câu trả lời (A, B, C, D)</label>
-                </div>
-                <div class="form-check form-switch mb-3">
-                    <input class="form-check-input shadow-sm" type="checkbox" id="settingAllowPlayed" style="transform: scale(1.3); margin-right: 10px;" checked>
-                    <label class="form-check-label fw-bold text-primary pt-1" for="settingAllowPlayed">🎲 Nút Ngẫu nhiên chọn cả người đã chơi rồi</label>
-                </div>
-            </div>
-            <div class="modal-footer justify-content-between border-top-0">
-                <button type="button" id="resetGameBtn" class="btn btn-danger px-4 py-2 fw-bold rounded-pill shadow-sm">Làm mới Game</button>
-                <button type="button" id="saveSettingsBtn" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow-sm">Lưu Cài Đặt</button>
-            </div>
+<div id="man_vongquay" style="display: none">
+    <div class="left">
+        <h2 id="lopname"></h2>
+        <h3 data-text="Danh sách đã gọi"></h3>
+        <ul id="studentList"></ul>
+    </div>
+
+    <div class="right">
+        <div class="d-flex justify-content-end gap-2 align-items-center flex-wrap">
+            <button id="to_trochoi" class="mx-2 btn btn-lg rounded-pill px-5 py-3 fw-bold fs-4 text-white shadow-sm z-3 bg-soft-orange" data-text="🎮 Trả lời câu hỏi"></button>
         </div>
+    </div>
+    <div class="wrap vongquay">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="960" height="960" title="Nhấn & giữ để lấy lực, thả để quay"></canvas>
+    </div>
+    <div class="vq-footer">
+        <div class="bar" aria-hidden="true"><div class="fill" id="chargeFill"></div></div>
+        <div class="hint" id="hint" data-text="Giữ chuột (hoặc chạm giữ) vào vòng quay để lấy lực • Tối thiểu quay 5 giây"></div>
+        <div class="result" id="result" style="font-size: 36px"></div>
     </div>
 </div>
 
-<div class="modal fade" id="confirmBackModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-dark" style="border: 3px solid #dc3545; background: #ffffff;">
-            <div class="modal-body text-center p-4">
-                <h4 class="text-danger mb-3">XÁC NHẬN VỀ TRANG CHỦ</h4>
-                <p class="mb-4">Lượt chơi của bạn đang diễn ra. Nếu về trang chủ lúc này, <strong>kết quả hiện tại sẽ không được lưu</strong>.<br>Bạn có chắc chắn muốn thoát?</p>
-                <div class="d-flex justify-content-center gap-3">
-                    <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal">Tiếp tục chơi</button>
-                    <button type="button" id="confirmBackBtn" class="btn btn-danger px-4 py-2">Đồng ý Thoát</button>
+<div id="man_trochoi" style="display:none">
+    <div class="position-absolute top-0 start-0 m-3 px-4 py-2 bg-white rounded-pill shadow-sm fw-bold text-secondary user-bar-mobile" style="z-index: 100; font-size: 1.2rem;"><span id="ten_hocsinh"  class="tths"></span></div>
+    <div id="gameScreen" >
+
+        <div class="position-fixed w-100 h-100 align-items-center g-4 justify-content-center d-flex z-2">
+
+            <div class="col-lg-8 d-flex flex-column gap-4 col-center-mobile">
+                <div id="questionArea" class="position-relative w-100 d-flex flex-column align-items-center quiz-section-mobile">
+                    <div class="deco-balloon start-0">🎈</div>
+                    <div class="deco-balloon end-0">🎈</div>
+
+                    <div class="quiz-frame p-3 rounded-5 w-100 position-relative shadow-soft-orange">
+                        <div class="awning-wave"></div>
+
+                        <div id="question" class="bg-white rounded-4 p-4 mb-4 text-center fs-1 fw-bold text-dark shadow-sm-inset position-relative z-2 question-box-mobile" data-text="Nhấn `Bắt đầu` để chơi!"></div>
+
+                        <div id="options" class="fs-2">
+                            <button>A. <mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" overflow="overflow" style="font-size: 113.1%;" tabindex="0" ctxtmenu_counter="0" data-semantic-locale="en" data-semantic-domain="clearspeak" data-semantic-style="default" data-semantic-domain2style="mathspeak:default,clearspeak:default" data-semantic-collapsible="collapsible" data-semantic-expandable="expandable" data-semantic-level="Level" data-semantic-speech-none="A equals F of slash s" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;1&quot;/&gt; equals &lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;F&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;5&quot;/&gt; of &lt;mark name=&quot;3&quot;/&gt; slash &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;s&lt;/say-as&gt;" data-speech-attached="true" data-semantic-braille="⠠⠁⠀⠨⠅⠀⠠⠋⠸⠌⠎" data-braille-attached="true" has-speech="true"><mjx-math data-latex="A = F / s" data-semantic-type="relseq" data-semantic-role="equality" data-semantic-annotation="depth:1" data-semantic-id="8" data-semantic-children="0,7" data-semantic-content="1" data-semantic-attributes="latex:A = F / s" data-semantic-owns="0 1 7" aria-level="0" data-semantic-structure="(8 0 1 (7 2 6 (5 3 4)))" breakable="true" class="NCM-N" data-speech-node="true" data-semantic-speech-none="A equals F of slash s" data-semantic-summary-none="equality" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;1&quot;/&gt; equals &lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;F&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;5&quot;/&gt; of &lt;mark name=&quot;3&quot;/&gt; slash &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;s&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;8&quot;/&gt; equality" data-semantic-braille="⠠⠁⠀⠨⠅⠀⠠⠋⠸⠌⠎" aria-hidden="true"><mjx-mi data-latex="A" data-semantic-type="identifier" data-semantic-role="latinletter" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;nemeth:number;depth:2" data-semantic-id="0" data-semantic-parent="8" data-semantic-attributes="latex:A" aria-level="1" data-speech-node="true" data-semantic-speech-none="A" data-semantic-summary-none="identifier" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt;" data-semantic-summary="&lt;mark name=&quot;0&quot;/&gt; identifier" data-semantic-braille="⠠⠁"><mjx-c class="mjx-c1D434">𝐴</mjx-c></mjx-mi><mjx-break size="4"> </mjx-break><mjx-mo data-latex="=" data-semantic-type="relation" data-semantic-role="equality" data-semantic-annotation="nemeth:number;depth:2" data-semantic-id="1" data-semantic-parent="8" data-semantic-attributes="latex:=" data-semantic-operator="relseq,=" aria-level="1" data-speech-node="true" data-semantic-speech-none="equals" data-semantic-summary-none="equals" data-semantic-speech="&lt;mark name=&quot;1&quot;/&gt; equals" data-semantic-summary="&lt;mark name=&quot;1&quot;/&gt; equals" data-semantic-braille="⠨⠅"><mjx-c class="mjx-c3D">=</mjx-c></mjx-mo><mjx-mrow space="4" data-semantic-added="true" data-semantic-type="appl" data-semantic-role="simple function" data-semantic-annotation="depth:2" data-semantic-id="7" data-semantic-children="2,5" data-semantic-content="6,2" data-semantic-parent="8" data-semantic-owns="2 6 5" aria-level="1" data-speech-node="true" data-semantic-speech-none="F of slash s" data-semantic-summary-none="identifier of slash identifier" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;F&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;5&quot;/&gt; of &lt;mark name=&quot;3&quot;/&gt; slash &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;s&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;2&quot;/&gt; identifier &lt;mark name=&quot;5&quot;/&gt; of &lt;mark name=&quot;3&quot;/&gt; slash &lt;mark name=&quot;4&quot;/&gt; identifier" data-semantic-braille="⠠⠋⠸⠌⠎"><mjx-mi data-latex="F" data-semantic-type="identifier" data-semantic-role="simple function" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;nemeth:number;depth:3" data-semantic-id="2" data-semantic-parent="7" data-semantic-attributes="latex:F" data-semantic-operator="appl" aria-level="2" data-speech-node="true" data-semantic-speech-none="F" data-semantic-summary-none="identifier" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;F&lt;/say-as&gt; &lt;/prosody&gt;" data-semantic-summary="&lt;mark name=&quot;2&quot;/&gt; identifier" data-semantic-braille="⠠⠋"><mjx-c class="mjx-c1D439">𝐹</mjx-c></mjx-mi><mjx-mo data-semantic-type="punctuation" data-semantic-role="application" data-semantic-annotation="nemeth:number;depth:3" data-semantic-id="6" data-semantic-parent="7" data-semantic-added="true" data-semantic-operator="appl" aria-level="2" data-speech-node="true" data-semantic-speech-none="of" data-semantic-summary-none="of" data-semantic-speech="&lt;mark name=&quot;6&quot;/&gt; of" data-semantic-summary="&lt;mark name=&quot;6&quot;/&gt; of"><mjx-c class="mjx-c2061">⁡</mjx-c></mjx-mo><mjx-mrow data-semantic-added="true" data-semantic-type="prefixop" data-semantic-role="division" data-semantic-annotation="depth:3" data-semantic-id="5" data-semantic-children="4" data-semantic-content="3" data-semantic-parent="7" data-semantic-owns="3 4" aria-level="2" data-speech-node="true" data-semantic-speech-none="slash s" data-semantic-summary-none="slash identifier" data-semantic-speech="&lt;mark name=&quot;3&quot;/&gt; slash &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;s&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;3&quot;/&gt; slash &lt;mark name=&quot;4&quot;/&gt; identifier" data-semantic-braille="⠸⠌⠎"><mjx-texatom data-mjx-texclass="ORD" texclass="ORD"><mjx-mo data-latex="/" data-semantic-type="operator" data-semantic-role="division" data-semantic-annotation="depth:4" data-semantic-id="3" data-semantic-parent="5" data-semantic-attributes="latex:/;texclass:ORD" data-semantic-operator="prefixop,/" aria-level="3" data-speech-node="true" data-semantic-speech-none="slash" data-semantic-summary-none="slash" data-semantic-speech="&lt;mark name=&quot;3&quot;/&gt; slash" data-semantic-summary="&lt;mark name=&quot;3&quot;/&gt; slash" data-semantic-braille="⠸⠌"><mjx-c class="mjx-c2F">/</mjx-c></mjx-mo></mjx-texatom><mjx-mi data-latex="s" data-semantic-type="identifier" data-semantic-role="latinletter" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;depth:4" data-semantic-id="4" data-semantic-parent="5" data-semantic-attributes="latex:s" aria-level="3" data-speech-node="true" data-semantic-speech-none="s" data-semantic-summary-none="identifier" data-semantic-speech="&lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;s&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;4&quot;/&gt; identifier" data-semantic-braille="⠎"><mjx-c class="mjx-c1D460">𝑠</mjx-c></mjx-mi></mjx-mrow></mjx-mrow></mjx-math><mjx-speech aria-label="A equals F of slash s, math" role="img" aria-roledescription=""></mjx-speech></mjx-container></button><button>B. <mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" overflow="overflow" style="font-size: 113.1%;" tabindex="0" ctxtmenu_counter="1" data-semantic-locale="en" data-semantic-domain="clearspeak" data-semantic-style="default" data-semantic-domain2style="mathspeak:default,clearspeak:default" data-semantic-collapsible="collapsible" data-semantic-expandable="expandable" data-semantic-level="Level" data-semantic-speech-none="A equals F times s" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;1&quot;/&gt; equals &lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;F&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;3&quot;/&gt; times &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;s&lt;/say-as&gt;" data-speech-attached="true" data-semantic-braille="⠠⠁⠀⠨⠅⠀⠠⠋⠡⠎" data-braille-attached="true" has-speech="true"><mjx-math data-latex="A = F \cdot s" data-semantic-type="relseq" data-semantic-role="equality" data-semantic-annotation="depth:1" data-semantic-id="6" data-semantic-children="0,5" data-semantic-content="1" data-semantic-attributes="latex:A = F \cdot s" data-semantic-owns="0 1 5" aria-level="0" data-semantic-structure="(6 0 1 (5 2 3 4))" breakable="true" class="NCM-N" data-speech-node="true" data-semantic-speech-none="A equals F times s" data-semantic-summary-none="equality" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;1&quot;/&gt; equals &lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;F&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;3&quot;/&gt; times &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;s&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;6&quot;/&gt; equality" data-semantic-braille="⠠⠁⠀⠨⠅⠀⠠⠋⠡⠎" aria-hidden="true"><mjx-mi data-latex="A" data-semantic-type="identifier" data-semantic-role="latinletter" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;nemeth:number;depth:2" data-semantic-id="0" data-semantic-parent="6" data-semantic-attributes="latex:A" aria-level="1" data-speech-node="true" data-semantic-speech-none="A" data-semantic-summary-none="identifier" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt;" data-semantic-summary="&lt;mark name=&quot;0&quot;/&gt; identifier" data-semantic-braille="⠠⠁"><mjx-c class="mjx-c1D434">𝐴</mjx-c></mjx-mi><mjx-break size="4"> </mjx-break><mjx-mo data-latex="=" data-semantic-type="relation" data-semantic-role="equality" data-semantic-annotation="nemeth:number;depth:2" data-semantic-id="1" data-semantic-parent="6" data-semantic-attributes="latex:=" data-semantic-operator="relseq,=" aria-level="1" data-speech-node="true" data-semantic-speech-none="equals" data-semantic-summary-none="equals" data-semantic-speech="&lt;mark name=&quot;1&quot;/&gt; equals" data-semantic-summary="&lt;mark name=&quot;1&quot;/&gt; equals" data-semantic-braille="⠨⠅"><mjx-c class="mjx-c3D">=</mjx-c></mjx-mo><mjx-mrow space="4" data-semantic-added="true" data-semantic-type="infixop" data-semantic-role="multiplication" data-semantic-annotation="depth:2" data-semantic-id="5" data-semantic-children="2,4" data-semantic-content="3" data-semantic-parent="6" data-semantic-owns="2 3 4" aria-level="1" inline-breaks="true" data-speech-node="true" data-semantic-speech-none="F times s" data-semantic-summary-none="product with 2 factors" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;F&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;3&quot;/&gt; times &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;s&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;5&quot;/&gt; product with 2 factors" data-semantic-braille="⠠⠋⠡⠎"><mjx-mi data-latex="F" data-semantic-type="identifier" data-semantic-role="simple function" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;nemeth:number;depth:3" data-semantic-id="2" data-semantic-parent="5" data-semantic-attributes="latex:F" aria-level="2" data-speech-node="true" data-semantic-speech-none="F" data-semantic-summary-none="identifier" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;F&lt;/say-as&gt; &lt;/prosody&gt;" data-semantic-summary="&lt;mark name=&quot;2&quot;/&gt; identifier" data-semantic-braille="⠠⠋"><mjx-c class="mjx-c1D439">𝐹</mjx-c></mjx-mi><mjx-break size="3"> </mjx-break><mjx-mo data-latex="\cdot" data-semantic-type="operator" data-semantic-role="multiplication" data-semantic-annotation="depth:3" data-semantic-id="3" data-semantic-parent="5" data-semantic-attributes="latex:\cdot" data-semantic-operator="infixop,⋅" aria-level="2" data-speech-node="true" data-semantic-speech-none="times" data-semantic-summary-none="times" data-semantic-speech="&lt;mark name=&quot;3&quot;/&gt; times" data-semantic-summary="&lt;mark name=&quot;3&quot;/&gt; times" data-semantic-braille="⠡"><mjx-c class="mjx-c22C5">⋅</mjx-c></mjx-mo><mjx-mi space="3" data-latex="s" data-semantic-type="identifier" data-semantic-role="latinletter" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;depth:3" data-semantic-id="4" data-semantic-parent="5" data-semantic-attributes="latex:s" aria-level="2" data-speech-node="true" data-semantic-speech-none="s" data-semantic-summary-none="identifier" data-semantic-speech="&lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;s&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;4&quot;/&gt; identifier" data-semantic-braille="⠎"><mjx-c class="mjx-c1D460">𝑠</mjx-c></mjx-mi></mjx-mrow></mjx-math><mjx-speech aria-label="A equals F times s, math" role="img" aria-roledescription=""></mjx-speech></mjx-container></button><button>C. <mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" overflow="overflow" style="font-size: 113.1%;" tabindex="0" ctxtmenu_counter="2" data-semantic-locale="en" data-semantic-domain="clearspeak" data-semantic-style="default" data-semantic-domain2style="mathspeak:default,clearspeak:default" data-semantic-collapsible="collapsible" data-semantic-expandable="expandable" data-semantic-level="Level" data-semantic-speech-none="A equals p times S" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;1&quot;/&gt; equals &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;p&lt;/say-as&gt; &lt;mark name=&quot;3&quot;/&gt; times &lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;S&lt;/say-as&gt; &lt;/prosody&gt;" data-speech-attached="true" data-semantic-braille="⠠⠁⠀⠨⠅⠀⠏⠡⠠⠎" data-braille-attached="true" has-speech="true"><mjx-math data-latex="A = p \cdot S" data-semantic-type="relseq" data-semantic-role="equality" data-semantic-annotation="depth:1" data-semantic-id="6" data-semantic-children="0,5" data-semantic-content="1" data-semantic-attributes="latex:A = p \cdot S" data-semantic-owns="0 1 5" aria-level="0" data-semantic-structure="(6 0 1 (5 2 3 4))" breakable="true" class="NCM-N" data-speech-node="true" data-semantic-speech-none="A equals p times S" data-semantic-summary-none="equality" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;1&quot;/&gt; equals &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;p&lt;/say-as&gt; &lt;mark name=&quot;3&quot;/&gt; times &lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;S&lt;/say-as&gt; &lt;/prosody&gt;" data-semantic-summary="&lt;mark name=&quot;6&quot;/&gt; equality" data-semantic-braille="⠠⠁⠀⠨⠅⠀⠏⠡⠠⠎" aria-hidden="true"><mjx-mi data-latex="A" data-semantic-type="identifier" data-semantic-role="latinletter" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;nemeth:number;depth:2" data-semantic-id="0" data-semantic-parent="6" data-semantic-attributes="latex:A" aria-level="1" data-speech-node="true" data-semantic-speech-none="A" data-semantic-summary-none="identifier" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt;" data-semantic-summary="&lt;mark name=&quot;0&quot;/&gt; identifier" data-semantic-braille="⠠⠁"><mjx-c class="mjx-c1D434">𝐴</mjx-c></mjx-mi><mjx-break size="4"> </mjx-break><mjx-mo data-latex="=" data-semantic-type="relation" data-semantic-role="equality" data-semantic-annotation="nemeth:number;depth:2" data-semantic-id="1" data-semantic-parent="6" data-semantic-attributes="latex:=" data-semantic-operator="relseq,=" aria-level="1" data-speech-node="true" data-semantic-speech-none="equals" data-semantic-summary-none="equals" data-semantic-speech="&lt;mark name=&quot;1&quot;/&gt; equals" data-semantic-summary="&lt;mark name=&quot;1&quot;/&gt; equals" data-semantic-braille="⠨⠅"><mjx-c class="mjx-c3D">=</mjx-c></mjx-mo><mjx-mrow space="4" data-semantic-added="true" data-semantic-type="infixop" data-semantic-role="multiplication" data-semantic-annotation="depth:2" data-semantic-id="5" data-semantic-children="2,4" data-semantic-content="3" data-semantic-parent="6" data-semantic-owns="2 3 4" aria-level="1" inline-breaks="true" data-speech-node="true" data-semantic-speech-none="p times S" data-semantic-summary-none="product with 2 factors" data-semantic-speech="&lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;p&lt;/say-as&gt; &lt;mark name=&quot;3&quot;/&gt; times &lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;S&lt;/say-as&gt; &lt;/prosody&gt;" data-semantic-summary="&lt;mark name=&quot;5&quot;/&gt; product with 2 factors" data-semantic-braille="⠏⠡⠠⠎"><mjx-mi data-latex="p" data-semantic-type="identifier" data-semantic-role="latinletter" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;nemeth:number;depth:3" data-semantic-id="2" data-semantic-parent="5" data-semantic-attributes="latex:p" aria-level="2" data-speech-node="true" data-semantic-speech-none="p" data-semantic-summary-none="identifier" data-semantic-speech="&lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;p&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;2&quot;/&gt; identifier" data-semantic-braille="⠏"><mjx-c class="mjx-c1D45D">𝑝</mjx-c></mjx-mi><mjx-break size="3"> </mjx-break><mjx-mo data-latex="\cdot" data-semantic-type="operator" data-semantic-role="multiplication" data-semantic-annotation="depth:3" data-semantic-id="3" data-semantic-parent="5" data-semantic-attributes="latex:\cdot" data-semantic-operator="infixop,⋅" aria-level="2" data-speech-node="true" data-semantic-speech-none="times" data-semantic-summary-none="times" data-semantic-speech="&lt;mark name=&quot;3&quot;/&gt; times" data-semantic-summary="&lt;mark name=&quot;3&quot;/&gt; times" data-semantic-braille="⠡"><mjx-c class="mjx-c22C5">⋅</mjx-c></mjx-mo><mjx-mi space="3" data-latex="S" data-semantic-type="identifier" data-semantic-role="latinletter" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;depth:3" data-semantic-id="4" data-semantic-parent="5" data-semantic-attributes="latex:S" aria-level="2" data-speech-node="true" data-semantic-speech-none="S" data-semantic-summary-none="identifier" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;S&lt;/say-as&gt; &lt;/prosody&gt;" data-semantic-summary="&lt;mark name=&quot;4&quot;/&gt; identifier" data-semantic-braille="⠠⠎"><mjx-c class="mjx-c1D446">𝑆</mjx-c></mjx-mi></mjx-mrow></mjx-math><mjx-speech aria-label="A equals p times S, math" role="img" aria-roledescription=""></mjx-speech></mjx-container></button><button>D. <mjx-container class="MathJax CtxtMenu_Attached_0" jax="CHTML" overflow="overflow" style="font-size: 113.1%;" tabindex="0" ctxtmenu_counter="3" data-semantic-locale="en" data-semantic-domain="clearspeak" data-semantic-style="default" data-semantic-domain2style="mathspeak:default,clearspeak:default" data-semantic-collapsible="collapsible" data-semantic-expandable="expandable" data-semantic-level="Level" data-semantic-speech-none="A equals m times g" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;1&quot;/&gt; equals &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;m&lt;/say-as&gt; &lt;mark name=&quot;3&quot;/&gt; times &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;g&lt;/say-as&gt;" data-speech-attached="true" data-semantic-braille="⠠⠁⠀⠨⠅⠀⠍⠡⠛" data-braille-attached="true" has-speech="true"><mjx-math data-latex="A = m \cdot g" data-semantic-type="relseq" data-semantic-role="equality" data-semantic-annotation="depth:1" data-semantic-id="6" data-semantic-children="0,5" data-semantic-content="1" data-semantic-attributes="latex:A = m \cdot g" data-semantic-owns="0 1 5" aria-level="0" data-semantic-structure="(6 0 1 (5 2 3 4))" breakable="true" class="NCM-N" data-speech-node="true" data-semantic-speech-none="A equals m times g" data-semantic-summary-none="equality" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt; &lt;mark name=&quot;1&quot;/&gt; equals &lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;m&lt;/say-as&gt; &lt;mark name=&quot;3&quot;/&gt; times &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;g&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;6&quot;/&gt; equality" data-semantic-braille="⠠⠁⠀⠨⠅⠀⠍⠡⠛" aria-hidden="true"><mjx-mi data-latex="A" data-semantic-type="identifier" data-semantic-role="latinletter" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;nemeth:number;depth:2" data-semantic-id="0" data-semantic-parent="6" data-semantic-attributes="latex:A" aria-level="1" data-speech-node="true" data-semantic-speech-none="A" data-semantic-summary-none="identifier" data-semantic-speech="&lt;prosody pitch=&quot;+30%&quot;&gt; &lt;mark name=&quot;0&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;A&lt;/say-as&gt; &lt;/prosody&gt;" data-semantic-summary="&lt;mark name=&quot;0&quot;/&gt; identifier" data-semantic-braille="⠠⠁"><mjx-c class="mjx-c1D434">𝐴</mjx-c></mjx-mi><mjx-break size="4"> </mjx-break><mjx-mo data-latex="=" data-semantic-type="relation" data-semantic-role="equality" data-semantic-annotation="nemeth:number;depth:2" data-semantic-id="1" data-semantic-parent="6" data-semantic-attributes="latex:=" data-semantic-operator="relseq,=" aria-level="1" data-speech-node="true" data-semantic-speech-none="equals" data-semantic-summary-none="equals" data-semantic-speech="&lt;mark name=&quot;1&quot;/&gt; equals" data-semantic-summary="&lt;mark name=&quot;1&quot;/&gt; equals" data-semantic-braille="⠨⠅"><mjx-c class="mjx-c3D">=</mjx-c></mjx-mo><mjx-mrow space="4" data-semantic-added="true" data-semantic-type="infixop" data-semantic-role="multiplication" data-semantic-annotation="depth:2" data-semantic-id="5" data-semantic-children="2,4" data-semantic-content="3" data-semantic-parent="6" data-semantic-owns="2 3 4" aria-level="1" inline-breaks="true" data-speech-node="true" data-semantic-speech-none="m times g" data-semantic-summary-none="product with 2 factors" data-semantic-speech="&lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;m&lt;/say-as&gt; &lt;mark name=&quot;3&quot;/&gt; times &lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;g&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;5&quot;/&gt; product with 2 factors" data-semantic-braille="⠍⠡⠛"><mjx-mi data-latex="m" data-semantic-type="identifier" data-semantic-role="latinletter" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;nemeth:number;depth:3" data-semantic-id="2" data-semantic-parent="5" data-semantic-attributes="latex:m" aria-level="2" data-speech-node="true" data-semantic-speech-none="m" data-semantic-summary-none="identifier" data-semantic-speech="&lt;mark name=&quot;2&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;m&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;2&quot;/&gt; identifier" data-semantic-braille="⠍"><mjx-c class="mjx-c1D45A">𝑚</mjx-c></mjx-mi><mjx-break size="3"> </mjx-break><mjx-mo data-latex="\cdot" data-semantic-type="operator" data-semantic-role="multiplication" data-semantic-annotation="depth:3" data-semantic-id="3" data-semantic-parent="5" data-semantic-attributes="latex:\cdot" data-semantic-operator="infixop,⋅" aria-level="2" data-speech-node="true" data-semantic-speech-none="times" data-semantic-summary-none="times" data-semantic-speech="&lt;mark name=&quot;3&quot;/&gt; times" data-semantic-summary="&lt;mark name=&quot;3&quot;/&gt; times" data-semantic-braille="⠡"><mjx-c class="mjx-c22C5">⋅</mjx-c></mjx-mo><mjx-mi space="3" data-latex="g" data-semantic-type="identifier" data-semantic-role="simple function" data-semantic-font="italic" data-semantic-annotation="clearspeak:simple;depth:3" data-semantic-id="4" data-semantic-parent="5" data-semantic-attributes="latex:g" aria-level="2" data-speech-node="true" data-semantic-speech-none="g" data-semantic-summary-none="identifier" data-semantic-speech="&lt;mark name=&quot;4&quot;/&gt; &lt;say-as interpret-as=&quot;character&quot;&gt;g&lt;/say-as&gt;" data-semantic-summary="&lt;mark name=&quot;4&quot;/&gt; identifier" data-semantic-braille="⠛"><mjx-c class="mjx-c1D454">𝑔</mjx-c></mjx-mi></mjx-mrow></mjx-math><mjx-speech aria-label="A equals m times g, math" role="img" aria-roledescription=""></mjx-speech></mjx-container></button>
+                        </div>
+
+                        <div id="ansContainer" style="display: none">
+                            <div class="d-flex justify-content-center pb-2 pt-4">
+                                <button class="markBtn mx-2 btn btn-sm rounded-pill px-4 fw-bold fs-4 text-white shadow-sm z-3 bg-soft-red" data-correct="false" data-text="Sai"></button>
+                                <button class="markBtn mx-2 btn btn-sm rounded-pill px-4 fw-bold fs-4 text-white shadow-sm z-3 bg-soft-green" data-correct="true" data-text="Đúng"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="position-relative w-75 d-flex justify-content-center pt-4 footer-mobile">
+                        <button id="showAnsBtn" class="mx-2 btn btn-lg rounded-pill px-5 py-3 fw-bold fs-4 text-black shadow-sm z-3 bg-soft-cream" data-text="👀 Hiện đáp án" style="display: none"></button>
+                        <button class="mx-2 btn btn-lg rounded-pill px-5 py-3 fw-bold fs-4 text-white shadow-sm z-3 bg-soft-blue" id="nextBtn" data-text="Bắt Đầu"></button>
+                        <button id="skipQuestionBtn" class="mx-2 btn btn-lg rounded-pill px-5 py-3 fw-bold fs-4 text-white shadow-sm z-3 bg-soft-orange btn-skip" data-text="Bỏ Qua" style="display: none"></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="container-fluid vh-100 py-4 overflow-hidden game-wrapper">
+            <div class="d-flex h-100 align-items-center g-4 justify-content-between">
+
+                <div class="col-lg-3 d-flex flex-column align-items-center justify-content-start h-100 position-relative col-left-mobile">
+                    <div class="custom-balloon balloon-green d-flex justify-content-center align-items-center shadow-sm z-3">
+                        <span id="score" class="display-4 fw-bold text-white">0</span>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-3 d-flex flex-column align-items-center justify-content-start h-100 position-relative">
+                    <div class="custom-balloon balloon-red d-flex justify-content-center align-items-center shadow-sm z-3">
+                        <span id="timer" class="display-4 fw-bold text-white"></span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="modal fade" id="playerReadyModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-dark" style="border: 3px solid #FFEB3B; background: linear-gradient(to bottom, #001f70, #0036a3);">
-            <div class="modal-body text-center p-5">
-                <h2 class="text-white mb-4">CHÚC MỪNG!</h2>
-                <div class="mb-4"><img src="assets/images/score.png" alt="Trophy" style="width: 120px;"></div>
-                <h4 class="text-warning mb-4">Người chơi: <span id="readyPlayerName" class="text-white">...</span></h4>
-                <p class="text-white-50">Bạn đã sẵn sàng để chinh phục các câu hỏi của chương trình chưa?</p>
-                <div class="mt-4">
-                    <button type="button" id="confirmReadyBtn" class="btn-border" style="display: inline-block;">
-                        <span class="btn-inner" style="font-size: 20px; padding: 10px 30px;">Sẵn sàng chơi</span>
-                    </button>
-                </div>
-            </div>
+
+
+
+        <div>
         </div>
+
     </div>
 </div>
-
-<div class="modal fade" id="confirmChangeModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-dark" style="border: 3px solid #dc3545; background: #ffffff;">
-            <div class="modal-body text-center p-4">
-                <h4 class="text-danger mb-3">XÁC NHẬN DỪNG CHƠI</h4>
-                <p class="mb-2">Người chơi <strong id="currentPlayingName" class="text-primary fs-5"></strong> đang trong lượt chơi.</p>
-                <p class="text-muted mb-4">Bạn có chắc muốn hủy kết quả để đổi lượt cho người mới?</p>
-                <div class="d-flex justify-content-center gap-3">
-                    <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal">Hủy bỏ</button>
-                    <button type="button" id="confirmChangeBtn" class="btn btn-danger px-4 py-2">Đồng ý dừng</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="confirmStopModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-dark" style="border: 3px solid #ffc107; background: #ffffff;">
-            <div class="modal-body text-center p-4">
-                <h4 class="text-warning mb-3">XÁC NHẬN BẢO TOÀN</h4>
-                <p class="mb-4">Bạn có chắc chắn muốn dừng cuộc chơi lúc này để bảo toàn số tiền thưởng hiện tại không?</p>
-                <div class="d-flex justify-content-center gap-3">
-                    <button type="button" class="btn btn-secondary px-4 py-2" data-bs-dismiss="modal">Tiếp tục chơi</button>
-                    <button type="button" id="confirmStopBtn" class="btn btn-warning px-4 py-2 text-dark fw-bold">Đồng ý bảo toàn</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="lifelineModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-dark" style="border: 3px solid #17a2b8; background: #ffffff;">
-            <div class="modal-body text-center p-4">
-                <h4 class="text-info mb-3 fw-bold" id="lifelineModalTitle">TRỢ GIÚP</h4>
-                <p class="mb-4 fs-5" id="lifelineModalBody"></p>
-                <button type="button" class="btn btn-info px-5 py-2 text-white fw-bold shadow-sm" data-bs-dismiss="modal">Đã xong & Tiếp tục</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="alertModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-dark" style="border: 3px solid #001f70; background: #ffffff;">
-            <div class="modal-body text-center p-4">
-                <h3 class="text-primary mb-3 fw-bold">THÔNG BÁO</h3>
-                <p id="alertMessage" class="mb-4 fs-5"></p>
-                <button type="button" class="btn btn-primary px-5 py-2 fw-bold" data-bs-dismiss="modal">Đóng</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade" id="leaderboardModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content text-dark" style="border: 3px solid #ffc107;">
-            <div class="modal-header bg-warning text-dark">
-                <h5 class="modal-title fw-bold">🏆 Bảng xếp hạng </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <ul id="leaderboardList"></ul>
-            </div>
-            <div class="modal-footer justify-content-between border-top-0">
-                <button type="button" class="btn btn-primary px-4 py-2 fw-bold rounded-pill shadow-sm mx-auto" data-bs-dismiss="modal">Đóng</button>
-            </div>
-        </div>
-    </div>
-</div>
-<audio id="bg-music-player">
-    <source src="" type="audio/mpeg">
-</audio>
-<audio id="music-player">
-    <source src="" type="audio/mpeg">
-</audio>
 </body>
 </html>
